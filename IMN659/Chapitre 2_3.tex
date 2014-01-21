@@ -154,11 +154,6 @@
     \titlepage
 \end{frame}
 
-\begin{frame}
-    \frametitle{Plan de la présentation}
-    \tableofcontents[]
-    %\tableofcontents[pausesections]
-\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -644,12 +639,12 @@ E(\textbf{p}) = \sum_{(x,y)\in W} \big[I(T((x,y);\textbf{p}), t_1) - I(x,y,t_2)\
 
 
 
-\subsection{Moindres carrés - estimation directe (intensité)}
+\subsection{Estimation paramétrique directe}
 
 
 
 \begin{frame}
-    \frametitle{Estimation paramétrique directe par raffinement itératif}
+    \frametitle{Estimation paramétrique directe (raffinement itératif)}
     
     Ayant une valeur courante $\textbf{p}^{(k)}$, l'estimation  de $\Delta \textbf{p}^{(k)}$ revient à minimiser la fonction
     suivante sur $\Delta \textbf{p}^{(k)}$:
@@ -676,10 +671,14 @@ E(\textbf{p}) = \sum_{(x,y)\in W} \big[I(T((x,y);\textbf{p}), t_1) - I(x,y,t_2)\
 \end{frame}
 
 \begin{frame}
-    \frametitle{Estimation paramétrique directe}
+    \frametitle{Estimation paramétrique directe (raffinement itératif)}
     
+      \begin{figure}
+           \begin{center}
+               \includegraphics[scale=0.5]{img/cats-magic}
+           \end{center}
+       \end{figure}
     
-    CRAYON
     
 \end{frame}
 
@@ -718,7 +717,7 @@ E(\textbf{p}) = \sum_{(x,y)\in W} \big[I(T((x,y);\textbf{p}), t_1) - I(x,y,t_2)\
 %\end{frame}
 
 \begin{frame}
-    \frametitle{Estimation paramétrique directe}
+    \frametitle{Estimation paramétrique directe (raffinement itératif)}
     
     Par manipulation directe, on obtient alors:
 
@@ -778,10 +777,7 @@ E(\textbf{p}) = \sum_{(x,y)\in W} \big[I(T((x,y);\textbf{p}), t_1) - I(x,y,t_2)\
     \begin{eqnarray}
     E(\textbf{d}^{*}) = \displaystyle \sum_{(x,y)\in W} \big[\textbf{d}(x,y) - \textbf{d}^*\big]^2 \label{EQ_INDIRECT}
     \end{eqnarray}
-    
-    On peut résoudre cette équation par \textbf{régression linéaire} ou \textbf{recherche exhaustive}.
-    
-    
+
 \end{frame}
 
 \begin{frame}
@@ -806,67 +802,6 @@ E(\textbf{p}) = \sum_{(x,y)\in W} \big[I(T((x,y);\textbf{p}), t_1) - I(x,y,t_2)\
 \end{frame}
 
 
-
-\subsection{Moindres carrés - estimation indirecte (mouvement affine)}
-
-\begin{frame}
-    \frametitle{Estimation paramétrique indirecte (modèle affine)}
-	
-    Supposons un mouvement plus complexe tel un modèle affine. 
-    
-    \begin{eqnarray*}
-    T((x,y);\textbf{p}) = \left( \begin{array}{c}
-    x' \\
-    y' \\
-    \end{array}
-    \right)
-    = \left( \begin{array}{c}
-    x + a_0+a_1x+ a_2y \\
-    y + b_0+b_1x+ b_2y  \\
-    \end{array}
-    \right)
-    \end{eqnarray*}
-    et $\mathbf{p}=(a_0,a_1,a_2,b_0,b_1,b_2)$.\medskip
-    
-    L'expression de l'énergie à minimiser est:
-    
-    \begin{eqnarray}
-    E(\mathbf{p}^{k}) = \displaystyle \sum_{(x,y)\in W} \big[\textbf{T}(\left(x,y\right);\mathbf{p}^{k}) - \textbf{d}(x,y)\big]^2 \label{EQ_INDIRECT_AFFINE}
-    \end{eqnarray}
-    
-    On peut résoudre cette équation par \textbf{régression linéaire}.
-    
-	
-\end{frame}
-
-\begin{frame}
-    \frametitle{Estimation paramétrique indirecte (modèle affine)}
-    
-        CRAYON
-        
-\end{frame}
-
-\begin{frame}
-    \frametitle{Estimation paramétrique indirecte (affine)}
-    \framesubtitle{Algorithme de l'estimation paramétrique indirecte par régression linéaire}
-    
-    \begin{small}
-        \begin{algorithm}[H]
-            \Entree{\fbox{$I(t)$,$I(t+1)$}}
-            \Sortie{\fbox{$\mathbf{p}$}: Paramètres du modèle de mouvement global de l'image}
-            \medskip
-            
-            $\mathbf{d} \leftarrow$ Initialisation par bloc fixe ou H-S ou $\dots$ \;
-            $\frac{\partial T}{\partial \textbf{p}} \leftarrow$ Calculer la matrice des dérivées partielles du modèle de transformation\;
-            $\mathbf{p} \leftarrow \dfrac{\bigg[ \frac{\partial T}{\partial \textbf{p}} \bigg]^T \mathbf{d}}{\bigg[\frac{\partial T}{\partial \mathbf{p} } \bigg]
-                \bigg[\frac{\partial T}{\partial \textbf{p}} \bigg]^T}$\; 
-
-            \Retour{$\mathbf{p}$}
-        \end{algorithm}
-    \end{small}
-    
-\end{frame}
-
 \begin{frame}
 	\frametitle{Estimation paramétrique}
 	\frametitle{Amélioration par estimation robuste}
@@ -883,6 +818,101 @@ E(\textbf{p}) = \sum_{(x,y)\in W} \big[I(T((x,y);\textbf{p}), t_1) - I(x,y,t_2)\
     	
 \end{frame}
 
+\section{Estimation du mouvement global (EMG) - Échantillonnage}
+\subsection{RANSAC}
+
+
+\begin{frame}
+	\frametitle{EMG - RANSAC}
+	Une autre technique utilise des \textbf{points clés} de des images aux temps $t$ et $t+1$ et tente de les associer à l'aide d'une transformation $T$.
+	
+      \begin{figure}
+           \begin{center}
+               \includegraphics[scale=0.4]{img/RANSAC_1}
+           \end{center}
+       \end{figure}    
+  
+  	Mais comment associer les points?
+  	
+\end{frame}
+
+\begin{frame}
+	\frametitle{EMG - RANSAC}
+	
+	On observe non seulement le point, mais le voisinage autour du point (fenêtre, ou \textit{patche})
+	
+\begin{itemize}
+\item \textbf{Recherche exhaustive} (long)
+\item \textbf{Classification} : On utilise un vecteur descriptif de l'entourage du point, et on compare les vecteurs similaires.
+\item \textbf{Recherche voisinage} : On compare avec les $N$ voisins les plus proches.
+\end{itemize}
+\end{frame}
+\begin{frame}
+	\frametitle{EMG - RANSAC}
+	  On obtient donc une série de \textit{potentiels} matchs (inliers)
+	  
+      \begin{figure}
+           \begin{center}
+               \includegraphics[scale=0.4]{img/RANSAC_2}
+           \end{center}
+       \end{figure}    
+       
+  ...mais plusieurs matchs seront faux! (outliers)
+\end{frame}
+\begin{frame}
+	\frametitle{EMG - RANSAC}
+	\textbf{RANSAC} : RANdom SAmple Consensus \medskip
+	
+	On choisit un faible échantillonnage (6 inliers) parmi nos matchs:
+	 
+      \begin{figure}
+           \begin{center}
+               \includegraphics[scale=0.4]{img/RANSAC_3}
+           \end{center}
+       \end{figure}    
+  
+\end{frame}
+\begin{frame}
+	\frametitle{EMG - RANSAC}
+	
+	  On estime la transformation $T$ à l'aide des inliers pris au hasard. On calcule la distance de tous les inliers ($E(D)$), et on garde ceux qui sont plus petit qu'un seuil.
+	  
+      \begin{figure}
+           \begin{center}
+               \includegraphics[scale=0.3]{img/RANSAC_4}
+           \end{center}
+       \end{figure}    
+  
+  	  On recommence récursivement avec 6 autres inliers, et on garde la transformation $T$ minimisant la distance $E(D)$
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{EMG - RANSAC}
+	
+	Itérations de RANSAC:
+	
+	\begin{itemize}
+	\item On sélectionne 6 points matchés (inliers) au hasard ;
+	\item On calcule la matrice $T$ par ces 6 points ;
+	\item On conserve les inliers valides (distance $<$ seuil)
+	\item On sélectionne 6 inliers qui matches au hasard ;
+	\item On calcule la matrice $T$ de ces 6 points ;
+	\item ...
+	\end{itemize}
+
+  
+\end{frame}
+\begin{frame}
+	\frametitle{EMG - RANSAC}
+
+      \begin{figure}
+           \begin{center}
+               \includegraphics[scale=0.4]{img/RANSAC_5}
+           \end{center}
+       \end{figure}    
+  
+\end{frame}
 
 
 
