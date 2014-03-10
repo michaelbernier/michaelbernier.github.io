@@ -1,0 +1,1360 @@
+\documentclass[]{beamer}
+
+\usepackage{microtype}
+
+% Use utf-8 encoding for foreign characters
+\usepackage[latin1]{inputenc}
+\usepackage[french]{babel}
+\usepackage{textcomp}
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{bbm}
+\usepackage{mathrsfs}
+
+\usepackage{algorithmic}
+\usepackage{algorithm}
+
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+% Setup for fullpage use
+% \usepackage{fullpage}
+
+% Uncomment some of the following if you use the features
+%
+% Running Headers and footers
+%\usepackage{fancyhdr}
+
+% Multipart figures
+\usepackage{subfigure}
+
+% More symbols
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{cancel}
+
+% Surround parts of graphics with box
+% \usepackage{boxedminipage}
+
+% Package for including code in the document
+\usepackage{listings}
+\usepackage{fancyvrb}
+
+% If you want to generate a toc for each chapter (use with book)
+% \usepackage{minitoc}
+
+% This is now the recommended way for checking for PDFLaTeX:
+\usepackage{ifpdf}
+
+%\newif\ifpdf
+%\ifx\pdfoutput\undefined
+%\pdffalse % we are not running PDFLaTeX
+%\else
+%\pdfoutput=1 % we are running PDFLaTeX
+%\pdftrue
+%\fi
+
+\usepackage{graphicx}
+\usepackage{stmaryrd}
+
+
+\def\figurename{NOTE:}
+
+
+\newcommand{\external}[2]
+{
+\begin{center} 
+\href{#1}{\color{blue}\underline{#2}}
+\end{center}
+}
+
+\newcommand{\fullscreenImg}[1]
+{
+	\begin{center}
+		\includegraphics[width=108mm,height=62mm,keepaspectratio]{img/#1}
+	\end{center}
+}
+
+\newcommand{\img}[2]
+{
+	\begin{figure}
+		\begin{center}
+			\includegraphics[scale=#1]{img/#2}
+		\end{center}
+	\end{figure}
+}
+
+\newcommand{\imgCaption}[3]
+{
+	\begin{figure}
+		\begin{center}
+			\includegraphics[scale=#1]{img/#2}
+			%\caption[Submanifold]{#3}
+			\caption{#3}
+		\end{center}
+	\end{figure}
+}
+
+\newcommand{\frameuptitle}[1]
+{
+	\underline{\textbf{#1}}\medskip
+}
+
+\newcommand{\Fourier}
+{
+	$\mathscr{F}$
+}
+
+\newcommand{\FourierInv}
+{
+	$\mathscr{F}^{-1}$
+}
+
+%\usetheme{Frankfurt}     %SANS SUBSECTION
+\usetheme{Darmstadt}    %AVEC SUBSECTION
+%\usecolortheme{crane}
+
+
+ \setbeamertemplate{footline}
+{
+  \hbox{%
+  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+    \usebeamerfont{title in head/foot}{Chapitre 4.2 - Suivi d'objet}
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+    \usebeamerfont{date in head/foot}
+    \insertframenumber{} / \inserttotalframenumber\hspace*{2ex} 
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+
+\setbeamertemplate{frametitle continuation}[from second]
+
+
+
+\title{Analyse de la vidéo}
+\subtitle {Chapitre 4.2 - Suivi d'objet}
+%\author{Michaël Bernier}
+\date{\today}
+
+\begin{document}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \ifpdf
+% \DeclareGraphicsExtensions{.pdf, .jpg, .tif}
+% \else
+% \DeclareGraphicsExtensions{.eps, .jpg}
+% \fi
+
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}
+	\frametitle{Plan de la présentation}
+	\tableofcontents
+	%\tableofcontents[pausesections]
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Suivi d'objet}
+
+\subsection{Catégories des suivis d'objet}
+
+
+\begin{frame}
+	\frametitle{Catégories de suivi d'objet}
+	
+	
+La tâche de détecter les objets et d'établir la correspondance entre les instances d'objet à chaque image peut être effectuée ensemble ou séparément. \medskip
+
+
+\begin{itemize}
+\item \textbf{Séparément: } Les régions possibles de présence d'objet à chaque image sont obtenues au moyen d'un algorithme de détection d'objet, puis un \textit{tracker} fait correspondre les objets à travers les images.
+\item \textbf{Conjointement: } Les régions et correspondances d'objet sont estimés à chaque image en mettant à jour la position de l'objet ainsi que son descripteur de contenu. 
+\end{itemize} 
+
+   
+\end{frame}
+
+\begin{frame}
+	\frametitle{Catégories de suivi d'objet}
+	\img{0.6}{trackingchart}
+		
+\end{frame}
+
+\begin{frame}
+	\frametitle{Catégories de suivi d'objet}
+	\img{0.2}{trackingchart2}
+	
+	\begin{itemize}
+	\item \textbf{(a): } Les objets détectés dans des images consécutives sont représentées par des points que l'on met en correspondance. Cette approche nécessite d'abord une détection de points et d'objets dans chaque image. 
+	\end{itemize} 
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Catégories de suivi d'objet}
+	\img{0.2}{trackingchart2}
+	
+	\begin{itemize}
+	\item \textbf{(b): } Kernel = Suivi du noyau, modèle de forme et d'apparence de l'objet. Par exemple, noyau = un modèle rectangulaire ou elliptique avec un histogramme associé. Les objets sont suivis par le calcul du mouvement (translation, rotation, affine) du noyau entre images consécutives.
+	\end{itemize} 
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Catégories de suivi d'objet}
+	\img{0.2}{trackingchart2}
+	
+	\begin{itemize}
+	\item \textbf{(c) (d): } Suivi de silhouette. Ces méthodes utilisent les informations codées à l'intérieur de la zone de l'objet (apparence et forme). Compte tenu des modèles d'objet, les silhouettes sont suivis soit par appariement de formes (c) ou par évolution de contour (d). Ce dernier peut être apparenté aux segmentations d'objet dans le domaine temporel, en utilisant les probabilités \textit{a priori} générées à partir des images précédentes.
+	\end{itemize} 
+	
+\end{frame}
+
+\subsection{Suivi basé sur les points d'intérêt}
+
+\begin{frame}
+	\frametitle{Plan de la présentation}
+	\tableofcontents[currentsubsection]
+\end{frame}
+
+\begin{frame}
+	\frametitle{Suivi de points}
+	
+	En général, après avoir modélisé nos objets avec des points d'intérêt (Harris, SIFT, etc), on les compare entre eux à l'aide d'une mesure de similarité de leur descripteur.
+	
+	\img{0.2}{pointstracking}
+	
+	On teste la correspondance entre chaque point, on conserve la meilleure pour chaque point.
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Suivi de points - RANSAC}
+	
+	Lorsqu'on a une série de point où la mise en correspondance a été effectuée, on peut utiliser un algorithme permettant d'extrapoler le déplacement de l'objet (RANSAC, etc) (Chapitre 2.3). \medskip
+	
+	Un avantage de RANSAC est sa capacité à calculer de manière robuste les paramètres du modèle de transformation, même s'il y a beaucoup d'outliers.\medskip
+	
+	Un inconvénient de RANSAC est qu'il n'y a pas de limite supérieure sur le temps de calcul de ces paramètres.
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Suivi de points - Iterative closest point (ICP)}
+	
+	L'algorithme d'''Iterative Closest Point'' est utilisé afin de faire correspondre deux nuages de points ensemble. \medskip
+	
+	La méthode consiste à relier tous les points d'un modèle sur un nuage de point, en modifiant la position des point par une transformation globale afin de minimiser une mesure de distance basée sur tous les points. Les étapes principales de l'algorithme sont:
+	
+	\begin{enumerate}
+	\item Association des points par les critères du plus proche voisin.
+	\item Estimation des paramètres de transformation utilisant une fonction de coût quadratique moyenne.
+	\item Transformer les points en utilisant les paramètres estimés.
+	\item Itération (ré-associer les points etc).
+	\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Suivi de points - Iterative closest point (ICP)}
+	
+	En assumant que \textbf{le point le plus près constitue un match}, on itère en transformant le nuage de point pour s'approcher progressivement d'une solution optimale.
+	
+	\img{0.3}{ICP_1}
+	\img{0.3}{ICP_2}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Suivi de points - Iterative closest point (ICP)}
+	
+	L'algorithme va converger si:
+	
+	\begin{itemize}
+	\item Le modèle et la cible sont déjà presque alignés (petits mouvements)
+	\item Il n'y a pas trop d'outliers.
+	\end{itemize}
+	
+	Pour optimiser l'algorithme, on peut travailler sur plusieurs points:
+	
+	\begin{enumerate}
+		\item La sélection initiales des points (réduire les outliers) ;
+		\item La mesure de similarité des points ;
+		\item L'algorithme de minimisation de la mesure de similarité.
+	\end{enumerate}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Suivi de points - Iterative closest point (ICP)}
+	
+	\underline{1: La sélection initiales des points } \bigskip
+	
+	On peut :
+	
+	\begin{itemize}
+	\item contrôler la densité de points à utiliser afin de réduire le temps de calcul. 
+	\item contrôler la qualité des points obtenus (SIFT vs Harris)
+	\end{itemize}
+	
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Suivi de points - Iterative closest point (ICP)}
+	
+	\underline{2: La mesure de similarité des points }\bigskip
+	
+	On peut ajouter une contrainte de similarité sur les points (au lieu de prendre le plus près). \medskip
+	
+	Ex.: Si le point le plus près est trop différent du point du modèle, alors on l'exclue du calcul.
+
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Suivi de points - Iterative closest point (ICP)}
+	
+	\underline{3: L'algorithme de minimisation de la mesure de similarité }\bigskip
+	
+	La plus grande perte de temps de l'algorithme est dans la recherche du point le plus près. \medskip
+	
+	On peut d'abord filtrer les points de la scène qui ne sont pas dans une zone de mouvement, puis aligner le centroide du modèle avec celui de la scène, pis lancer notre algorithme de recherche de transformation.\medskip
+	
+	Pour trouver une transformation potentielle, on peut utiliser RANSAC.
+
+\end{frame}
+
+
+\subsection{Suivi basé sur les descripteurs locaux (topologie)}
+
+\begin{frame}
+	\frametitle{Plan de la présentation}
+	\tableofcontents[currentsubsection]
+\end{frame}
+
+\begin{frame}
+	\frametitle{Recherche par topologie}
+	
+	Si on a accès à une segmentation binaire (ou à plusieurs classes) de la scène et de notre objet, on peut utiliser des méthodes à recherche par topologie (IMN638). \medskip
+	
+	\img{0.35}{topo}
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Recherche par topologie}
+
+La relation «contenant/contenu» permet de créer une hiérarchie qu'il est possible de représenter sous la forme d'un arbre. Cet arbre est appelé « arbre d'adjacence » car il permet de décrire l'adjacence (la relation contenant/contenu) entre les différentes régions du marqueur.
+
+	\img{0.35}{topo}
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Recherche par topologie}
+
+Une fois la segmentation deux classe effectuée, l'étape suivante consiste à prendre notre image binaire puis générer un arbre d'adjacence de la totalité de l'image. 
+
+	\img{0.35}{topo2}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Recherche par topologie}
+
+{\small Notre arbre d'adjacence généré pour la totalité de l'image, la recherche du marqueur topologique en soit peut commencer. Le tout s'effectue en recherchant un sous-arbre dans l'arbre généré à partir de l'image qui correspond à celui d'un des marqueurs dans notre librairie.}
+
+	\img{0.35}{topo3}
+	
+\end{frame}
+
+\begin{frame}
+\frametitle{Recherche par topologie - translation}
+
+Pour trouver notre translation, on peut simplement  utiliser le barycentre de la racine du marqueur, le centre de son aire englobant ou la moyenne de position des barycentres de ses régions pour déterminer sa position sur le plan image. \bigskip
+
+Par contre, nous sommes limités à une translation seulement.
+
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Recherche par topologie - rotation ou autre}
+
+\textbf{Rotation} : L'arbre des marqueurs peut être divisé en deux groupes  distincts. La position d'un des groupes par rapport à l'autre est calculée à l'aide des deux barycentres qui permettent de construire un vecteur. L'orientation de ce vecteur dans l'espace fenêtre donne la rotation (Le vecteur doit être perpendiculaire au vecteur de vision de la caméra pour que ceci fonctionne.) \bigskip
+
+\textbf{Matrice de transformation} : L'arbre des marqueurs peut être divisé en quatre sections différentes. Le centre de chaque section devient équivalent à un « coin » d'un marqueur planaire et peut être utilisé pour trouver la matrice de transformation avec les méthodes précédemment vu.
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Recherche par topologie - rotation ou autre}
+
+\fullscreenImg{topo4}
+
+\end{frame}
+
+\subsection{Suivi basé sur les noyaux (mean-shift)}
+
+\begin{frame}
+	\frametitle{Plan de la présentation}
+	\tableofcontents[currentsubsection]
+\end{frame}
+
+\begin{frame}
+	\frametitle{Suivi de noyau}
+	
+	En général, la méthode ``recherche brute'' pour le suivi de noyau d'objet consite à:
+	
+	\begin{enumerate}
+	\item Définir une zone de recherche ;
+	\item Placer le modèle défini à partir de l'image précédente \textbf{à chaque position} de la zone de recherche et calculer une mesure de similarité entre le modèle et le modèle-cible (candidat);
+	\item Choisir le meilleur candidat maximisant une mesure de similarité.
+	\end{enumerate} 
+		
+	Bien sûr, comme la recherche serait beaucoup trop longue pour toute l'image, on limite à l'entourage de l'objet.
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Suivi de noyau}
+	
+	En général, on peut soit comparer directement les noyaux ``modèle (m)'' et ``cible (c)'', soit comparer leur distribution. Pour ce faire, on peut définir des mesures: \medskip
+	
+	\begin{itemize}
+	\item Mesures directes:\medskip
+	\begin{itemize}
+		\item $ d_{L1}(m,c) = \displaystyle \sum_{i \in noyau} |m(i) - c(i)| $
+		\item $ d_{LSQ}(m,c) = \displaystyle \sum_{i \in noyau} (m(i) - c(i))² $
+		\item $ d_{corr}(m,c) = \displaystyle \sum_{i \in noyau} m(i) \cdot c(i) $
+	\end{itemize}
+	\end{itemize} 
+		
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Suivi de noyau}
+	
+	En général, on peut soit comparer directement les noyaux ``modèle (m)'' et ``cible (c)'', soit comparer leur distribution. Pour ce faire, on peut définir des mesures: \medskip
+	
+	\begin{itemize}
+	\item Mesures basées sur la distribution (histogramme):\medskip
+	\begin{itemize}
+		\item $ d_{EMD}(m,c) = \textit{EarthMoverDistance}(H_{m},H_{c}) $ \medskip
+		\item $ d_{Inter}(m,c) = \textit{IntersectionHisto}(H_{m},H_{c}) $ \medskip
+		\item $ d_{Hellinger}(m,c) = \sqrt{1-\textit{Bhattacharyya(m,c)}} $ \medskip
+	\end{itemize}
+	\end{itemize} 
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Suivi de noyau}
+	
+	\begin{itemize}
+		\item $ d_{Hellinger}(m,c) = \sqrt{1-\textit{Bhattacharyya(m,c)}} $
+	\end{itemize} \medskip
+	
+	Le coefficient de Bhattacharyya permet d'évaluer l'information \textbf{communes} à deux distributions discrètes sous une forme d'intégrale rudimentaire.
+	elle est définie comme: 
+	
+	\begin{eqnarray}\label{Bhatta}
+	\textit{Bhattacharyya(m,c)} = \displaystyle{\sum_{i \in Histo} \sqrt{H_{m}(i) \cdot H_{c}(i)}} \cdot
+	\end{eqnarray}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Suivi de noyau}
+	
+	Exemple de suivi de noyau par comparaison directe.
+	
+	\img{0.5}{eyetrack}
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Suivi de noyau}
+	
+	Exemple de suivi de noyau par distribution (couleur et gradient)
+	
+	\img{0.5}{facetrack}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Mean Shift: fonction de densité }
+	
+	L'algorithme de suivi de noyau le plus utilisé est le \textit{mean shift}, qui utilise une fonction de densité des histogrammes de couleur pour apparié le modèle et la cible:
+	
+	\img{0.2}{meanmarde}
+	
+\end{frame}
+
+
+
+\begin{frame}
+	\frametitle{Mean Shift: fonction de densité }
+	
+	\frameuptitle{Fonction de densité appliquée à l'histogramme binarisé}
+	
+	Plutôt que de prendre les données directement pour former l'histogramme de l'objet $p$ et les cibles $p(y)$, on pondère à l'aide d'une fonction de densité. \medskip
+	
+	Mean-shift utilise un noyau Epanechnikov (quadratique), car on utilisera sa forme dérivée (noyau uniforme).
+	
+	\img{0.5}{Noyau2}
+	
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Mean Shift: fonction de densité}
+
+\begin{small}	
+	Cette représentation pondérée par la fonction de densité (noyau) permet d'avoir une distribution qui sera très \textbf{dense} (poids important) au centre de l'objet, et qui sera de moins en moins dense en s'éloignant (poids moins important). Ainsi, on s'assure de pouvoir soutirer une direction de changement valide afin de maximiser la comparaison des histogrammes.
+\end{small}
+	
+	\img{0.4}{Pdf}
+	
+
+\end{frame}
+
+
+
+\begin{frame}
+	\frametitle{Mean Shift: fonction de densité }
+	\begin{small}	
+		Le \textbf{mean shift} consiste à trouver, de façon itérative, le déplacement d'un objet en mettant en correspondance leurs histogrammes pondérés par une fonction de densité.
+	\end{small}
+	
+	\img{0.5}{Noyau3}
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Mean Shift: fonction de densité }
+	
+	\img{0.31}{batta_meanshift}
+
+	L'utilisation du noyau permet de ``lisser'' la fonction de similarité (le coefficient de bhattacharyya)	et d'extrapoler une direction de changement.
+\end{frame}
+
+
+\begin{frame}
+
+	\frametitle{Mean shift - Justification mathématique}
+	\framesubtitle{Objet référence}
+{\footnotesize Le mean-shift suit le même principe qu'un descente de gradient, mais en se basant sur l'estimation des fonctions de densité (non-paramétrique):} \medskip
+\begin{columns}[c]
+	
+\column{.55\textwidth}
+{\scriptsize
+\begin{itemize}
+\item[$q$] l'objet à suivre (histogramme pondéré)
+\item[$p(y_j)$] un objet candidat à la position $y$ et à l'itération $j$ (histogramme pondéré)
+\item[$u \in 1..m$] est l'indice d'une bin d'histogramme ($q_u$ = valeur de l'histogramme de l'objet)
+\item[$x_i$] la position d'un pixel relatif au centre de la cible
+\item[$K_e$] représente le noyau epanechnikov
+\item[$K_n$] le noyau uniforme (la dérivée de $K_e$)
+\item[$w_i$] Une pondération du pixel $x_i$ 
+\item[$b(x_i)$] Bin associée à la valeur du pixel $x_i$ 
+\end{itemize}
+}
+
+\column{.5\textwidth}
+{\scriptsize 
+
+	Construction des histos pondérés: 
+	
+	\begin{eqnarray}\label{Histoq}
+	\textbf{q}_u = \displaystyle \sum_{i \in cible} K_e(\| \textbf{y}_0 - x_i \| \cdot \delta \lbrack b(x_i) - u \rbrack 
+	\end{eqnarray}
+	
+	\begin{eqnarray}\label{Histop}
+	\textbf{p}_{u}(y_j) = \displaystyle \sum_{i \in cible} K_e(\| \textbf{y}_j - x_i \| \cdot \delta \lbrack b(x_i) - u \rbrack 
+	\end{eqnarray}
+}
+
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}
+
+	\frametitle{Mean shift - Justification mathématique}
+	\framesubtitle{Objet référence}
+{\footnotesize Le mean-shift suit le même principe qu'un descente de gradient, mais en se basant sur l'estimation des fonctions de densité (non-paramétrique):} \medskip
+\begin{columns}[c]
+	
+\column{.55\textwidth}
+{\scriptsize
+\begin{itemize}
+\item[$q$] l'objet à suivre (histogramme pondéré)
+\item[$p(y_j)$] un objet candidat à la position $y$ et à l'itération $j$ (histogramme pondéré)
+\item[$u \in 1..m$] est l'indice d'une bin d'histogramme ($q_u$ = valeur de l'histogramme de l'objet)
+\item[$x_i$] la position d'un pixel relatif au centre de la cible
+\item[$K_e$] représente le noyau epanechnikov
+\item[$K_n$] le noyau uniforme (la dérivée de $K_e$)
+\item[$w_i$] Une pondération du pixel $x_i$ 
+\item[$b(x_i)$] Bin associée à la valeur du pixel $x_i$ 
+\end{itemize}
+}
+
+\column{.45\textwidth}
+{\footnotesize 
+
+	Équation du mean-shift: 
+	
+	\begin{eqnarray}\label{MS}
+	\textbf{y}_1 = \frac{\displaystyle{\sum_{i \in cible} x_i \cdot
+	w_{i} \cdot K_n(\| \textbf{y}_0 - x_i \| }}{\displaystyle{\sum_{i \in cible} w_{i} \cdot K_n(\| \textbf{y}_0 - x_i \| }}
+	\end{eqnarray}}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}
+
+	\frametitle{Mean shift - Justification mathématique}
+	\framesubtitle{Objet référence}
+{\footnotesize Le mean-shift suit le même principe qu'un descente de gradient, mais en se basant sur l'estimation des fonctions de densité (non-paramétrique):} \medskip
+\begin{columns}[c]
+	
+\column{.55\textwidth}
+{\scriptsize
+\begin{itemize}
+\item[$q$] l'objet à suivre (histogramme pondéré)
+\item[$p(y_j)$] un objet candidat à la position $y$ et à l'itération $j$ (histogramme pondéré)
+\item[$u \in 1..m$] est l'indice d'une bin d'histogramme ($q_u$ = valeur de l'histogramme de l'objet)
+\item[$x_i$] la position d'un pixel relatif au centre de la cible
+\item[$K_e$] représente le noyau epanechnikov
+\item[$K_n$] le noyau uniforme (la dérivée de $K_e$)
+\item[$w_i$] Une pondération du pixel $x_i$ 
+\item[$b(x_i)$] Bin associée à la valeur du pixel $x_i$ 
+\end{itemize}
+}
+
+\column{.45\textwidth}
+{\footnotesize 
+
+	Pondération $w_i$, à calculer pour chaque pixel: 
+	
+	\begin{eqnarray}\label{wi}
+	w_i = \displaystyle \sum_{u \in 1..m} \sqrt{\frac{q_u}{p_u(y_0)}} \cdot \delta \lbrack b(x_i) -u \rbrack 
+	\end{eqnarray}
+	
+	où $\delta$ est la fonction dirac.
+}
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Mean shift - Suivi de l'objet}
+	
+	\frameuptitle{Algorithme de suivi par le mean shift}
+	
+\begin{footnotesize}	
+\begin{enumerate}
+    \item Calculer $q$ et $p(y_0)$ selon Eq.(\ref{Histoq}) et Eq.(\ref{Histop})
+    \item Évaluer $\rho(y_{0}) = \displaystyle \sum_{u \in 1..m} \sqrt{q_u \cdot p_u(y_{0})}$  \hspace{2mm} ($\rho$ = Coefficient de Bhattacharyya )
+    \item Évaluer les poids $w_i$ pour chaque pixel selon Eq.(\ref{wi})
+    \item Trouver le prochain déplacement $(y_{1})$ en utilisant Eq.(\ref{MS}).
+    \item Calculer $p(y_{1})$ selon Eq.(\ref{Histop}) et évaluer $\rho(y_{1}) = \displaystyle \sum_{u \in 1..m} \sqrt{q_u \cdot p_u(y_{1})}$
+    \item \textbf{Tant que}
+    $\bigg(\rho(y_{1}) <
+     \rho(y_{0}) \bigg)$  \textbf{faire:}
+     \begin{itemize}
+        \item $y_{1} \leftarrow \frac{(y_{1})+ (y_{0})}{2}$
+        \item Re-évaluer $\rho(y_{1})$.
+     \end{itemize}
+    \item \textbf{Si} $\big( \|(y_{0})-(y_{1})\| < \epsilon$ \big) Fin de l'algorithme,
+    \textbf{sinon} $(y_{0}) \leftarrow (y_{1})$  et  aller à l'étape 3.
+\end{enumerate}
+\end{footnotesize}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Mean shift - Amélioration}
+	
+	\frameuptitle{Amélioration: la mise à échelle (Camshift)}
+	
+	\begin{itemize}
+\item On ajoute un paramètre $h$ qui permet d'ajuster la taille de l'objet cible afin de mieux représenter l'objet en mouvement.
+\item La mesure de similarité ( coefficient de Bhattachariia ) est \textbf{invariante au changement d'échelle}.
+\end{itemize} \medskip
+
+
+
+	Équation du cam-shift: 
+	{\footnotesize 
+	\begin{eqnarray}\label{CS}
+	\textbf{y}_1 = \frac{\displaystyle{\sum_{i \in cible} x_i \cdot
+	w_{i} \cdot K_n(\| \frac{\textbf{y}_0 - x_i}{h} \|) }}{\displaystyle{\sum_{i \in cible} w_{i} \cdot K_n(\| \frac{\textbf{y}_0 - x_i}{h} \|) }}
+	\end{eqnarray}}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Mean shift - cam-shift}
+	
+	Après convergence du mean-shift, on effectue la comparaison \textbf{3 fois}, avec comme valeur de $h$, où $h_{prev}$ défini la valeur de $h$ retenue à l'itération précédente:\medskip
+	
+	\begin{columns}[c]
+	
+\column{.3\textwidth}
+	
+	\begin{enumerate}
+\item $h = h_{prev}$
+\item $h = h_{prev} + \Delta h$
+\item $h = h_{prev} - \Delta h$
+	\end{enumerate}
+	
+	$\Delta = 0.1 h_{prev}$
+\column{.05\textwidth}
+\column{.65\textwidth}
+
+	On prend le meilleur résultat $h_{opt}$. Pour être moins sensible au changement d'échelle, on se définie la fonction suivante:\\ $h = \alpha h_{opt} + (1 - \alpha) h_{prev}$\\
+	où $\alpha = 0.1$	
+
+\end{columns}
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Mean shift - Améliorations}
+	
+	
+	\fullscreenImg{Scal}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Mean shift - Améliorations}
+
+	\fullscreenImg{Scal2}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Mean shift - Amélioration}
+	
+	\frameuptitle{Apprentissage de l'arrière-plan}
+	
+	En apprenant l'arrière-plan, on peut masquer les valeurs d'intensité reliées à l'arrière-plan.\medskip
+	
+	De cette façon, le suivi ne pourra être confondu avec des objets stables de l'arrière-plan.
+
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Mean shift - Améliorations}
+	
+	\frameuptitle{Filtre de Kalman}
+	
+	En intégrant les \textbf{filtres de Kalman}, on augmente la robustesse de l'estimation du déplacement en deux étapes:
+	
+	\begin{itemize}
+\item Prédiction de l'état suivant;
+\item Mise-à-jour de l'état
+\end{itemize}
+
+	\bigskip
+	
+	\textbf{\underline{NOTE}}: Nous aborderons ce thème au prochain sous-chapitre...
+	
+\end{frame}
+
+
+
+\subsection{Suivi basé sur les prédiction (Kalman)}
+
+\begin{frame}
+	\frametitle{Plan de la présentation}
+	\tableofcontents[currentsubsection]
+\end{frame}
+
+\begin{frame}
+	\frametitle{Introduction sur les filtres de Kalman}
+	
+	\textbf{\underline{Le filtre de Kalman}} : Ceci permet d'avoir un suivi facilité par le
+fait que l'on \textbf{prend en compte les précédents déplacements pour essayer de
+deviner où se trouve l'objet à l'instant \textit{t}}.\bigskip
+
+	Il faut initier le filtre, puis, en corrigeant à chaque étape sa prédiction avec la position réelle, l'estimation du déplacement \textbf{est de plus en plus précise}.
+	
+	\img{0.4}{Kalman1}
+		
+\end{frame}
+
+\begin{frame}
+	\frametitle{Introduction sur les filtres de Kalman}
+	
+	\begin{itemize}
+\item \textbf{Estimation \textit{a posteriori} ($\hat{x}_t^{+}$)}: Estimation du déplacement à l'instant \textit{t} basée sur l'estimation \textit{a priori} du déplacement à l'instant \textit{t}. \bigskip
+\item \textbf{Estimation \textit{a priori} ($\hat{x}_t^{-}$)}: Estimation du déplacement calculée à partir des estimations \textit{a posteriori} aux instants précédents (\textit{t-1}, \textit{t-2}, ...).
+	\end{itemize}
+		
+\end{frame}
+
+\begin{frame}[shrink]
+	\frametitle{Équation du système}
+	
+\begin{small}	
+	L'équation régissant un lien linéaire stochastique entre \textbf{l'état de l'objet} et \textbf{la mesure de ce déplacement} est :
+	
+	\begin{eqnarray}\label{EQ1}
+	\begin{array}{ l l l }
+     x_t = & A \cdot x_{t-1} + B \cdot u_t + w_{t-1} 	& \rightarrow \textit{État} \\
+     z_t = & H \cdot x_{t} + v_{k}					 & \rightarrow \textit{Mesure}
+ 	\end{array}
+	\end{eqnarray}
+	
+	Où $w_k$ et $v_k$ représentent le \textbf{bruit (incertitude) d'état} et le \textbf{bruit de la mesure}. Ils sont indépendant et régis selon une loi de probabilité \textit{normale}:
+	
+	\begin{eqnarray}\label{EQ2}
+     p(w) \sim N(0,Q) \\
+     p(v) \sim N(0,R)
+	\end{eqnarray}
+	
+	La \textbf{covariance du bruit de déplacement Q} et la \textbf{covariance du bruit de mesure R} sont assumées constantes même s'ils peuvent changer en pratique. Ils sont estimés dans la phase d'apprentissage.
+\end{small}
+
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Équation du système}
+	
+	\begin{tiny}	
+	\begin{eqnarray*}\label{EQ1}
+	 \addtolength{\fboxsep}{5pt}
+   	\boxed{
+	\begin{array}{ l l l }
+     x_t = & A \cdot x_{t-1} + B \cdot u_k + w_{t-1} & \rightarrow \textit{Déplacement} \\
+     z_t = & H \cdot x_{t} + v_{t}					 & \rightarrow \textit{Mesure}
+ 	\end{array}
+ 	}
+	\end{eqnarray*}
+	\end{tiny}\medskip
+	
+	\begin{itemize}
+\item $A_{n \hspace*{0.2mm} x \hspace*{0.2mm} n}$ fait le lien entre l'état du déplacement du temps \textit{t-1} avec le temps \textit{t}.
+\item $B_{n \hspace*{0.2mm} x \hspace*{0.2mm} l}$ fait le lien entre l'option de contrôle optionnel $u_k \in \mathbb{R}^l$ avec l'état $x_k$. 
+\item $H_{m \hspace*{0.2mm} x \hspace*{0.2mm} n}$ fait le lien l'état $x_k$ et la mesure $z_k \in \mathbb{R}^m$. 
+	\end{itemize}
+	
+	En pratique, $A, B, H$ varient en fonction du temps, mais elles sont déterminées en phase d'apprentissage et supposées constantes.
+	 
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Équation de l'estimation}
+	
+	On a définie l'estimation\textit{a posteriori} $\hat{x}_t^{+}$ comme étant une \textbf{combinaison linéaire} entre \textbf{l'estimation \textit{a priori} $\hat{x}_t^{-}$} et \textbf{une différence pondérée entre une mesure $z_k$ et l'estimation \textit{a priori} de cette mesure $H \cdot \hat{x}_t^{-}$ (appelée \textbf{résidu}}:
+	
+	\begin{eqnarray}\label{EQ3}
+     \hat{x}_t^{+} = \hat{x}_t^{-} + K \cdot \big( z_k - H \cdot \hat{x}_t^{-} \big)
+	\end{eqnarray}
+	
+	Un résidu de 0 signifie une prédiction exacte de la mesure. 
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Équation de l'erreur de prédiction}
+	
+	On peut exprimer l'erreur d'état \textit{a priori} de l'étape \textit{t} comme étant la \textbf{différence entre l'état et l'estimation \textit{a priori} de l'état ($\hat{x}_t^{-} \in \mathbb{R}^n$)}.\medskip
+	
+	On peut exprimer l'erreur d'état \textit{a posteriori} de l'étape \textit{t} comme étant la \textbf{différence entre l'état et l'estimation \textit{a posteriori} de l'état ($\hat{x}_t^{+} \in \mathbb{R}^n$)}.\medskip
+	
+	\begin{eqnarray*}
+	\begin{array}{ l l }
+     e_t^{-} = & x_t - \hat{x}_t^{-} \\
+     e_t^{+} = & x_t - \hat{x}_t^{+}
+ 	\end{array}
+	\end{eqnarray*}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Équation de l'erreur de prédiction}
+	
+	D'un point de vue statistique, on peut exprimer la \textbf{covariance de l'erreur d'estimation \textit{a priori}} et la \textbf{covariance de l'erreur d'estimation \textit{a posteriori}}, qui permettent d'évaluer la dépendance entre l'erreur de prédiction $\hat{x}$ avec l'état $x$, comme étant:
+	
+	
+	\begin{eqnarray}\label{EQ4}
+		\begin{array}{ l l l}
+			P_t^{-} = & E[e_t^{-} \cdot e_t^{- \hspace*{0.2mm} T}] = &  E[(x_t - \hat{x}_t^{-})(x_t - \hat{x}_t^{-})^T] \\
+			P_t^{+} = & E[e_t^{+} \cdot e_t^{+ \hspace*{0.2mm} T}] = &  E[(x_t - \hat{x}_t^{+})(x_t - \hat{x}_t^{+})^T]
+		\end{array}
+	\end{eqnarray}
+	
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Équation du filtre de Kalman}
+
+	\begin{tiny}	
+	\begin{eqnarray*}
+	\addtolength{\fboxsep}{5pt}
+	\boxed{
+			\begin{array}{ l l l}
+				P_t^{-} = & E[e_t^{-} \cdot e_t^{- \hspace*{0.2mm} T}] & \rightarrow \textbf{Eq.\ref{EQ4}-}\\
+				P_t^{+} = & E[e_t^{+} \cdot e_t^{+ \hspace*{0.2mm} T}] & \rightarrow \textbf{Eq.\ref{EQ4}+}\\
+				\hat{x}_t^{+} = & \hat{x}_t^{-} + K \cdot \big( z_k - H \cdot \hat{x}_t^{-} \big) & \rightarrow \textbf{Eq.\ref{EQ3}}
+			\end{array}
+		}
+	\end{eqnarray*}
+	\end{tiny}
+	
+\begin{footnotesize}	
+	$K_{n \hspace*{0.2mm} x \hspace*{0.2mm} m}$ de l'Eq.\ref{EQ3} représente le \textbf{facteur de gain (ou de mélange)} minimisant l'Eq.\ref{EQ4}+.\medskip
+	
+	On obtient sa valeur en:
+	
+	\begin{enumerate}
+\item Substituant \textbf{Eq.\ref{EQ3}} dans l'équation de l'erreur $e_t^{+}$;
+\item Substituant le résultat dans l'équation \textbf{Eq.\ref{EQ4}+};
+\item Calculant l'esperance $E[e_t^{+} \cdot e_t^{+ \hspace*{0.2mm} T}]$;
+\item Extrayant la dérivée de la trace du résultat, en égalant à 0 et en resolvant l'équation pour $K$.
+	\end{enumerate}
+	\end{footnotesize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Équation du filtre de Kalman}
+
+	On obtient alors que le gain $K$ peut être déterminé par l'équation suivante:\bigskip
+	
+	\begin{eqnarray}\label{EQ6}
+		\begin{array}{ r l }
+			K_t	= & P_t^{-} H^T \cdot \big( H  P_t^{-}  H^T + R \big)^{-1}\vspace*{3mm}\\
+				= & \dfrac{P_t^{-} H^T}{H  P_t^{-} H^T + R}
+		\end{array}
+	\end{eqnarray}\medskip
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Équation du filtre de Kalman}
+
+	En regardant l'\textbf{Eq.\ref{EQ6}}, on peut voir que \textbf{plus la covariance de l'erreur de mesure ($R$) approche 0, plus le gain $K$ donne une plus grande pondération au résidu}:
+	
+	\begin{eqnarray*}
+			\lim_{R \to 0} K_t = \dfrac{1}{H}
+	\end{eqnarray*}
+	
+		On constate aussi que \textbf{plus l'erreur d'estimation d'état \textit{a priori} ($P_t^{-}$) approche 0, plus le gain $K$ donne une plus petite pondération au résidu}:
+	
+	\begin{eqnarray*}
+			\lim_{P_t^{-} \to 0} K_t =  0
+	\end{eqnarray*}
+
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Équation du filtre de Kalman}
+
+	\begin{footnotesize}
+	\begin{eqnarray*}
+	\addtolength{\fboxsep}{5pt}
+	\boxed{
+		\begin{array}{ l c l}
+			\lim_{R \to 0} K_t & = & \dfrac{1}{H} \vspace*{2mm}\\
+			\lim_{P_t^{-} \to 0} K_t & = &  0
+		\end{array}
+		}
+	\end{eqnarray*}
+	\end{footnotesize}
+	
+	De ces équations, on peut tirer les évidences suivantes:
+
+	\begin{small}
+	\begin{itemize}
+		\item Plus la covariance de l'erreur de mesure $R$ approche de 0, plus on fait confiance à la mesure actuelle ($z_k$) et moins on fait confiance à la prédiction de mesure (l'\textit{a priori} $H \hat{x}_t^{-}$).
+		\item Plus la covariance d'erreur de prédiction $P_t^{-}$ approche 0, moins on fait confiance à la mesure actuelle ($z_k$) et plus on fait confiance à la prédiction de mesure (l'\textit{a priori} $H \hat{x}_t^{-}$).
+	\end{itemize}
+	\end{small}
+	
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{frame}
+	\frametitle{Kalman: Cas discret}
+	\framesubtitle{Forme générale}
+	
+	Le filtre de Kalman estime un déplacement en utilisant un contrôle issus du retour de résultat: Le filtre \textbf{estime l'état du système } à une moment et puis obtient un \textbf{résultat de mesure bruité }.\medskip
+	
+	On sépare donc les équations du filtre en deux  différentes catégories: \textit{\textbf{Mise à jour du temps (MaJT)}} et \textit{\textbf{Mise à jour de la mesure (MaJM)}}.
+	
+	\img{0.6}{Kalman1}
+		
+\end{frame}
+
+\begin{frame}
+	\frametitle{Kalman: Cas discret}
+	\framesubtitle{Forme générale}
+	
+	La \textbf{MaJT} s'occupe de la \textbf{prédiction} en calculant l'estimation de la mesure et la covariance de son erreur ($\hat{x}_t^{-}$ et $P_t^{-}$).\bigskip
+	
+	La \textbf{MaJM} s'occupe quant à elle d'ajouter une mesure $z$ et de corriger l'estimation \textit{a priori} (calcul de l'estimation {a posteriori} $\hat{x}_t^{+}$ ainsi que la covariance de son erreur $P_t^{+}$.
+	
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Kalman: Cas discret}
+	\framesubtitle{Forme générale}
+	
+	\begin{footnotesize}	
+	Au lieu de garder toutes les informations des anciens déplacements (mesures), le filtre de Karman conditionne sa prédiction sur mesures et prédictions précédentes. Le cycle complet de l'algorithme:
+	\end{footnotesize}
+	
+	\img{0.3}{Kalman2}
+	
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Kalman: Cas discret}
+	\framesubtitle{Condition optimale}
+	
+	Le filtre de Kalman offrira des résultats optimaux dans le cas où:
+	
+	\begin{itemize}
+\item Le bruit d'état \textbf{Q} et de mesure \textbf{R} sont indépendants;
+\item Le bruit d'état \textbf{Q} et de mesure \textbf{R} sont indépendants sont parfaitement représentés par un bruit de distribution normale.
+\item Le système est connu;
+\item Le système est linéaire.
+\end{itemize}
+
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Kalman: Cas discret}
+	\framesubtitle{Application au suivi d'image}
+	
+	Il faut comprendre que pour avoir une bonne variable d'état, il faut \textbf{bien modéliser notre système.}\medskip
+	
+	Prenons l'exemple d'un cas de la robotique. Supposons $([x],[y])$ les coordonnées du centre de l'objet (le robot), $([vx],[vy])$ les vitesses de l'objet (le robot) et $([ax],[ay])$ l'accélération des objets. L'état $x_t$ au temps $t$ est donné par:
+	
+	\begin{eqnarray}
+		x_t = 		
+		\left[
+			\begin{array}{c}
+				x_{[x] ,t}\\
+				x_{[y] ,t}\\
+				x_{[vx],t}\\
+				x_{[vy],t}\\
+				x_{[ax],t}\\
+				x_{[ay],t}
+				\end{array}	
+		\right]
+	\end{eqnarray}
+
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Kalman: Cas discret}
+	\framesubtitle{Application au suivi d'image}
+	
+\begin{footnotesize}	
+	Les lois de la physique suivent le modèle de mouvement suivant:
+\end{footnotesize}
+
+	\begin{scriptsize}
+	\begin{eqnarray*}
+	\boxed{
+			\begin{array}{l c l c l c l}
+					x_{[x] ,t+1}  & = & x_{[x] ,t} & + & x_{[vx] ,t}\cdot \Delta t 	& + & \frac{x_{[ax] ,t} \cdot \Delta t^2}{2}\\
+					x_{[y] ,t+1}  & = & x_{[y] ,t} & + & x_{[vy] ,t}\cdot \Delta t 	& + & \frac{x_{[ay] ,t} \cdot \Delta t^2}{2}\\
+					x_{[vx] ,t+1} & = & 0          & + & x_{[vx] ,t}					 	& + & x_{[ax] ,t} \cdot \Delta t\\
+					x_{[vy] ,t+1} & = & 0          & + & x_{[vy] ,t} 					 	& + & x_{[ay] ,t} \cdot \Delta t\\
+					x_{[ax] ,t+1} & = & 0          & + & 0          						& + & x_{[ax] ,t}\\
+					x_{[ay] ,t+1} & = & 0          & + & 0          						& + & x_{[ay] ,t}
+               \end{array}	
+	}
+	\end{eqnarray*}
+	\end{scriptsize}
+	
+\begin{footnotesize}
+
+	\begin{columns}[l]
+	
+\column{.55\textwidth}
+	
+	 Donc, en supposant $\Delta t = 1$, la matrice $A$, constante,  permettant de passer de l'état $x_t$ à l'état $x_{t+1}$ est donnée par:
+
+
+\column{.45\textwidth}
+
+	\begin{eqnarray}
+		A_{n \hspace*{0.2mm} x \hspace*{0.2mm} n} = 
+		\left[
+			\begin{array}{c c c c c c}
+				1 & 	0 & 	1	& 0 & \frac{1}{2} & 0 \\					
+				0 & 	1 & 	0	& 1 & 0 & \frac{1}{2} \\
+				0 & 	0 & 	1	& 0 & 1 & 0 \\					
+				0 & 	0 & 	0	& 1 & 0 & 1 \\
+				0 & 	0 & 	0	& 0 & 1 & 0 \\					
+				0 & 	0 & 	0	& 0 & 0 & 1				
+			\end{array}	
+		\right]
+	\end{eqnarray}
+
+\end{columns}
+\end{footnotesize}	
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Kalman: Cas discret}
+	\framesubtitle{Application au suivi d'image}
+	
+	\begin{columns}[c]
+	
+\column{.65\textwidth}
+	
+	\begin{footnotesize}	
+	\begin{eqnarray*}
+    \boxed{
+	\begin{array}{ l l l }
+     x_t = & A \cdot x_{t-1} + \cancel{B \cdot u_k} + w_{t-1} & \rightarrow \textit{Déplacement} \\
+     z_t = & H \cdot x_{t} + v_{t}					 & \rightarrow \textit{Mesure}
+ 	\end{array}
+ 	}
+	\end{eqnarray*}
+	\end{footnotesize}
+
+\column{.45\textwidth}
+	
+	\begin{footnotesize}	
+	\begin{eqnarray*}
+    \boxed{
+    \begin{array}{ c }
+     p(w) \sim N(0,Q) \\
+     p(v) \sim N(0,R)
+ 	\end{array}
+ 	}
+	\end{eqnarray*}
+	\end{footnotesize}	
+
+\end{columns}\bigskip
+
+	Pour faire le lien avec l'état du système et la mesure, on a besoin de la matrice $H$. Comme nous ne voulons que le positionnement, suivant la même logique que pour la matrice $A$, la matrice $H$ sera:
+{\footnotesize 	
+\begin{eqnarray}
+		H_{n \hspace*{0.2mm} x \hspace*{0.2mm} n} = 
+		\left[
+			\begin{array}{c c c c c c}
+				1 & 	0 & 	0	& 0 & 0 & 0 \\					
+				0 & 	1 & 	0	& 0 & 0 & 0 \\
+				0 & 	0 & 	0	& 0 & 0 & 0 \\					
+				0 & 	0 & 	0	& 0 & 0 & 0 \\
+				0 & 	0 & 	0	& 0 & 0 & 0 \\					
+				0 & 	0 & 	0	& 0 & 0 & 0				
+			\end{array}	
+		\right]
+	\end{eqnarray}}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Kalman: Cas discret}
+	\framesubtitle{Application au suivi d'image}
+	
+	\begin{columns}[c]
+	
+\column{.65\textwidth}
+	
+	\begin{footnotesize}	
+	\begin{eqnarray*}
+    \boxed{
+	\begin{array}{ l l l }
+     x_t = & A \cdot x_{t-1} + \cancel{B \cdot u_k} + w_{t-1} & \rightarrow \textit{Déplacement} \\
+     z_t = & H \cdot x_{t} + v_{t}					 & \rightarrow \textit{Mesure}
+ 	\end{array}
+ 	}
+	\end{eqnarray*}
+	\end{footnotesize}
+
+\column{.45\textwidth}
+	
+	\begin{footnotesize}	
+	\begin{eqnarray*}
+    \boxed{
+    \begin{array}{ c }
+     p(w) \sim N(0,Q) \\
+     p(v) \sim N(0,R)
+ 	\end{array}
+ 	}
+	\end{eqnarray*}
+	\end{footnotesize}	
+
+\end{columns}
+
+	Comment estime-t-on les covariances de bruit d'état $Q_{6x6}$ et de bruit de mesure $R_{2x2}$?
+	
+	\begin{itemize}
+\item Hypothèse 1: Aucun bruit d'état ou de mesure $\rightarrow R = 0, Q = 0$
+\item Hypothèse 2: Bruit de positionnement seulement $\rightarrow R = 0, Q = 0$ sauf pour $Q_{11}$ et $Q_{22}$
+\item \textbf{Hypothèse 3: Bruit de positionnement, de vitesse, d'accélération, de mesure.}
+	\end{itemize} 
+
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Kalman: Cas discret}
+	\framesubtitle{Application au suivi d'image}
+	
+	\frameuptitle{Hypothèse 3: Bruit d'état et de mesure.}
+
+	\textbf{Le bruit de la mesure $R$ n'est pas disponible} si on n'a accès qu'aux images de la vidéo. Cependant, si on connait les imprécisions du système d'acquisition, celles-ci seraient intégrées à la matrice $R$. Les deux possibilités d'estimation de la matrice $R$ sont:
+	
+	\begin{itemize}
+\item Mettre $R$ à 0; $\rightarrow$ Donne de moins bons résultats (aucune imprécision).
+\item Mettre $R$ à identité. $\rightarrow$ Permet d'estimer l'imprécision à une loi normale (gaussienne). 
+\end{itemize}
+		
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Kalman: Cas discret}
+	\framesubtitle{Application au suivi d'image}
+	
+	\frameuptitle{Hypothèse 3: Bruit d'état et de mesure.}
+
+	\textbf{Le bruit de positionnement, vitesse et accélération} doit être déterminé expérimentalement. Il est régi par le comportement de l'objet: \textbf{Plus l'objet a un mouvement chaotique, moins l'hypothèse de constance de la matrice $Q$ est vérifiée}. Pour estimer la matrice $Q$:
+	
+	\begin{enumerate}
+\item Faire le tracking et enregistrer l'estimation \textit{a posteriori} d'états estimés $\hat{x}_{t}^{+}$
+\item Au temps t+1, déterminer l'erreur d'état en suivant l'équation: \textit{a priori} $w_{t} = \hat{x}_{t}^{+} - A \cdot \hat{x}_{t-1}^{+}$.
+\item Calculer $Q = cov(w_t)$ et itérer jusqu'à convergence de $Q$
+	\end{enumerate}
+		
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Kalman: Cas discret}
+	\framesubtitle{Application au suivi d'image}
+	
+	%\fullscreenImg{lips}
+		
+\end{frame}
+
+\subsection{Suivi d'objet basé sur les contours/silhouettes}
+
+
+\begin{frame}
+	\frametitle{Plan de la présentation}
+	\tableofcontents[currentsubsection]
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%\subsection{Mise en correspondance et suivi}
+%
+%\begin{frame}
+%	\frametitle{Mise en correspondance} 
+%	
+%	La mise en correspondance originelle de nos points d'intérêts est effectuée en faisant  une \textbf{distance euclidienne} entre toutes les primitives SIFT des objets $k$, $O_k$ et les primitives SIFT de du frame courant $I_t$.
+%	
+%	\img{0.45}{Matching}
+%	
+%
+%		
+%\end{frame}
+%
+%
+%\begin{frame}
+%	\frametitle{Mise en correspondance} 
+%	
+%	Donc, pour effectuer une bonne mise en correspondance, on:
+%	
+%	\begin{itemize}
+%\item Emmagasine les primitives SIFT des $k$ objets $O_k$
+%\item Pour une image $I_t$:
+%\begin{enumerate}
+%\item On extrait les primitives SIFT;
+%\item On indexe les primitives en ordre selon une loi des plus proches voisins;
+%\item On effectue une vérification de géométrie par 3 points (transformée de Hough)
+%\end{enumerate}
+%\end{itemize}
+%
+%		
+%\end{frame}
+%
+%
+%
+%\begin{frame}
+%	\frametitle{Mise en correspondance} 
+%	\frametitle{Transformée de Hough} 	
+%	
+%	Une \textbf{transformation de Hough} est utilisée pour prédire la position, l'orientation et l'échelle à partir des hypothèses de l'appariement.\bigskip
+%	
+%	 Cela consiste à \textbf{trouver toutes les positions de l'objet qui correspondent à une caractéristique} et à voter pour le meilleur appariement.
+%	 
+%\end{frame}
+%
+%\begin{frame}
+%	\frametitle{Mise en correspondance} 
+%	
+%	\fullscreenImg{Trans}
+%
+%		
+%\end{frame}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
