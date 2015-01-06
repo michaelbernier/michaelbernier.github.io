@@ -1,0 +1,1531 @@
+\documentclass[]{beamer}
+%\usetheme{keynote_theme}
+\usetheme{CambridgeUS}
+%\usecolortheme{crane}
+
+\usepackage{microtype}
+
+% Use utf-8 encoding for foreign characters
+\usepackage[latin1]{inputenc}
+\usepackage[french]{babel}
+\usepackage{textcomp}
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{bbm}
+\usepackage{mathrsfs}
+
+\usepackage{algorithmic}
+\usepackage[ruled]{algorithm2e}
+
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+% Setup for fullpage use
+% \usepackage{fullpage}
+
+% Uncomment some of the following if you use the features
+%
+% Running Headers and footers
+%\usepackage{fancyhdr}
+
+% Multipart figures
+\usepackage{subfigure}
+
+% More symbols
+\usepackage{amsmath}
+% \usepackage{amssymb}
+% \usepackage{latexsym}
+
+% Surround parts of graphics with box
+% \usepackage{boxedminipage}
+
+% Package for including code in the document
+\usepackage{listings}
+\usepackage{fancyvrb}
+
+% If you want to generate a toc for each chapter (use with book)
+% \usepackage{minitoc}
+
+% This is now the recommended way for checking for PDFLaTeX:
+\usepackage{ifpdf}
+
+%\newif\ifpdf
+%\ifx\pdfoutput\undefined
+%\pdffalse % we are not running PDFLaTeX
+%\else
+%\pdfoutput=1 % we are running PDFLaTeX
+%\pdftrue
+%\fi
+
+\usepackage[font={scriptsize, it}]{caption}
+\captionsetup{labelformat=empty,labelsep=none}
+
+\usepackage{graphicx}
+\usepackage{stmaryrd}
+\usepackage{movie15}
+
+\newcommand{\external}[2]
+{
+\begin{center} 
+\href{#1}{\color{blue}\underline{#2}}
+\end{center}
+}
+
+
+\newcommand{\fullscreenImg}[1]
+{
+   \begin{center}
+      \includegraphics[width=108mm,height=62mm,keepaspectratio]{img/#1}
+   \end{center}
+}
+
+\newcommand{\img}[2]
+{
+   \begin{figure}
+      \begin{center}
+         \includegraphics[scale=#1]{img/#2}
+      \end{center}
+   \end{figure}
+}
+
+\newcommand{\imgCaption}[3]
+{
+   \begin{figure}
+      \begin{center}
+         \includegraphics[scale=#1]{img/#2}
+         %\caption[Submanifold]{#3}
+         \caption{#3}
+      \end{center}
+   \end{figure}
+}
+
+\newcommand{\frameuptitle}[1]
+{
+   \underline{\textbf{#1}}\medskip
+}
+
+\newcommand{\Fourier}
+{
+   $\mathscr{F}$
+}
+
+\newcommand{\FourierInv}
+{
+   $\mathscr{F}^{-1}$
+}
+
+
+%\setbeamertemplate{footline}
+%{
+%  \hbox{%
+%  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+%    \usebeamerfont{title in head/foot}Chapitre 1 - Représentation d'une vidéo numérique
+%  \end{beamercolorbox}%
+%  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+%    \usebeamerfont{date in head/foot}
+%    \insertframenumber{} / \inserttotalframenumber\hspace*{2ex} 
+%  \end{beamercolorbox}}%
+%  \vskip0pt%
+%}
+
+
+
+\title{Analyse de la vidéo}
+\subtitle {Chapitre 1 - Représentation d'une vidéo numérique}
+%\author{Michaël Bernier}
+\date{Dernière rév.:\\ \today}
+
+\begin{document}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \ifpdf
+% \DeclareGraphicsExtensions{.pdf, .jpg, .tif}
+% \else
+% \DeclareGraphicsExtensions{.eps, .jpg}
+% \fi
+
+\begin{frame}
+	\titlepage
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Caractéristiques de la vidéo}
+
+\begin{frame}
+   \frametitle{Plan de présentation}
+   \tableofcontents[currentsection]
+\end{frame}
+
+\subsection{Introduction à la vidéo}
+\begin{frame}
+   \frametitle{ Vidéo numérique }
+   
+   
+      
+   On caractérise donc la vidéo numérique par les paramètres suivants:
+   \footnote{Une vidéo numérique peut être obtenue par la discrétisation et l'encodage de la vidéo analogique ou en utilisant directement une série d'acquisition numérique (capteur CCD)} 
+   \medskip
+
+   \begin{itemize}
+      \item[$\bullet$] $f_t$: Fréquence d'image (\textit{frames per seconds (fps))};
+      \item[$\bullet$] $f_y$: Lignes par frame;
+      \item[$\bullet$] $f_x$: Pixels par lignes;
+      \item[$\bullet$] \textbf{$N_b$: Bits à encoder}.
+   \end{itemize}\medskip
+
+   Ce dernier paramètre encode la valeur d'intensité (couleur) d'un pixel.
+   
+\end{frame}
+
+\begin{frame}
+   \frametitle{ Encodage }
+   
+   Le flux de données dans la vidéo numérique est alors défini par:\medskip
+
+   \begin{LARGE}
+      \begin{eqnarray} 
+      \label{EQ1_1}
+      \mathfrak{F}= N_b \cdot f_y \cdot f_x \cdot f_t~~(\textrm{bits/s})
+      \end{eqnarray}
+   \end{LARGE}
+
+
+   \begin{columns}[c]
+   
+   \column{.3\textwidth}
+
+   \column{.7\textwidth}
+   \footnotesize
+      \begin{itemize}
+         \item[$N_b$] Nb de \textbf{Bits de l'encodage} par pixels
+         \item[$f_x$] Nb de \textbf{Pixels} par ligne
+         \item[$f_y$] Nb de \textbf{Lignes} par image
+         \item[$f_t$] Nb d'\textbf{Images} par seconde
+      \end{itemize}
+   \normalsize
+   \end{columns}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Encodage }
+	
+	\textbf{Bits de l'encodage}\medskip
+	
+	On encode chacun des canaux avec un nombre de bits nécessaire pour représenter des valeurs d'intensité.\medskip
+	
+	Dans le standard RGB, on encode généralement de façon égale, ce qui donnera, pour une image couleur, $N_b=24$ bits à utiliser (8 par canaux). \medskip
+	
+	Pour le standard YUV, plus près du système visuel humain, on encode selon un critère 4:1:1 ($N_b=6$) ou 4:1:0 ($N_b=5$), par exemple. 
+	
+	\img{1.0}{YUV1}
+	
+\end{frame}
+
+\begin{frame}
+   \frametitle{ Vidéo analogique }
+   
+   La vidéo analogique ne permet pas l'encodage de la vidéo comme la vidéo numérique. C'est un flux continu de données analogiques, destiné à être affiché sur un écran de télévision (basé sur le principe du \textbf{balayage}).  \bigskip
+
+   \begin{itemize}
+      \item  Écran cathodique: balayage point par point, suivant des lignes.
+      \item  Résolution en \textit{dti} (dot per inch) (VGA, S-VGA,...)..
+      \item  \textbf{Fréquence verticale} (30 à 60 Hz): Indique le taux de rafraîchissement d'une ligne.
+      \item  \textbf{Fréquence image}: Indique le taux de rafraîchissement d'affichage d'une image.
+   \end{itemize}   
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{ Vidéo analogique: Norme }
+   
+   Les principales normes de la vidéo analogique, régies selon les capacités du système électrique et de bande passante du pays:
+
+   \begin{itemize}
+      \item  \textbf{PAL (\textit{Phase Alternating Line}):} Code les vidéos sur 625 lignes (576 seulement sont affichées, car 8\% des lignes servent à la synchronisation).\\
+      25 frames par seconde à un format 4\:3;
+      \item  \textbf{NTSC (\textit{National Television Standards Committee)}):} Code les vidéos sur 525 lignes (480 seulement sont affichées, car 8\% des lignes servent à la synchronisation).\\
+      30 frames par seconde à un format 4\:3;
+   \end{itemize}
+
+   Ces standards utilisent le \textbf{balayage entrelacé} pour doubler la fréquence d'image et réduire la bande passante.
+
+\end{frame}
+\subsection{Balayage entrelacé et progressif}
+
+\begin{frame}
+	\frametitle{Type de balayage}
+	 \textbf{Le balayage}: Une image est reconstituée au moyen d'un faisceau décrivant une suite simple de lignes, qui commence en haut et à gauche de l'écran pour s'achever en bas et à droite avant de revenir à son point de départ.
+   \medskip
+	 
+	 \begin{itemize}
+	 	\item \textbf{Le balayage entrelacé}: Nombre de lignes impair où le faisceau est deux fois plus rapide ; 
+	 	\item \textbf{Le balayage progressif}: Nombre de lignes pair ou impair.
+	 \end{itemize}
+
+   \begin{columns}[c]
+   
+   \column{.5\textwidth}
+
+   \imgCaption{1.0}{CH1_progressive}{Progressif}
+
+   \column{.5\textwidth}
+
+   \imgCaption{1.0}{CH1_interlaced}{Entrelacé}
+   \end{columns}
+   
+   %\begin{figure}[ht]
+   %   \includemovie[poster, text={\small(Interlacé)}]{6cm}{6cm}{img/CH1_balayageEntrelace.gif}
+  % \end{figure}
+	%\img{0.4}{Balayage}
+
+	
+\end{frame}
+
+\begin{frame}
+   \frametitle{Balayage entrelacé}
+   
+   En effectuant un balayage entrelacé, on peut réduire de moitié le nombre de lignes d'une \textbf{image} pour les séparer en deux \textbf{champs}. \bigskip
+  
+   \begin{itemize}
+      \item  \textbf{Image}: Image complète à afficher.
+      \item  \textbf{Champs}: Agencement de lignes d'un image. \bigskip
+   \end{itemize}    
+
+   Si $\Delta t$ est le temps pour balayer un image, alors le temps de balayage d'un champ est $\Delta t / 2$. 
+   
+\end{frame}
+
+\begin{frame}
+	\frametitle{Balayage entrelacé}
+	
+   En affichant alternativement un champs et l'autre, on augmente la fréquence d'image!
+	
+	\img{0.8}{Entrelace}
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Avantages du balayage entrelacé }
+Avantages: \medskip
+	\begin{itemize}
+
+		\item[$\bullet$] \textbf{Fréquence doublée}: À un instant donné, le système n'affiche qu'un champ plutôt qu'un image complet. Ex.: Notre 576 lignes à 30 Hz est en fait du 288 lignes à 60 Hz. \medskip
+
+      \item[$\bullet$] \textbf{Réduction du scintillement} : Une fréquence trop basse donne un effet de scintillement dans les grandes zones à illumination élevée et avec beaucoup de mouvements. \medskip
+
+		\item[$\bullet$] Occupe la moitié de la bande passante.
+
+	\end{itemize} 
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Inconvénients du balayage entrelacé }
+	 
+	Inconvénients: \medskip
+	\begin{itemize}
+
+		\item[$\bullet$] \textbf{Artefacts d'entrelacement} : La fréquence d'image n'étant pas la même que la fréquence verticale, des \textbf{artefacts d'entrelacement} peuvent apparaitre, surtout dans une scène mouvementée \textbf{latéralement}. \medskip
+
+		\item[$\bullet$]\textbf{ La complexité}: La compression de donnée s'avère plus complexe, puisque la vidéo se retrouve sur plusieurs champs au lieu d'un seul. Si on visionne un film et qu'on effectue un retour en arrière, on doit soit n'afficher qu'un image sur deux, soit utiliser un filtre de désentrelacement.\\
+
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Artefact d'entrelacement }
+   
+\begin{columns}[c]
+   
+   \column{.5\textwidth}
+
+   \imgCaption{0.2}{CH1_champs1}{Champs comprenant les lignes paires}
+   \imgCaption{0.2}{CH1_champs2}{Champs comprenant les lignes impaires}
+
+   \column{.5\textwidth}
+   
+   \imgCaption{0.2}{CH1_champs1et2}{Image affiché}
+
+\end{columns}
+
+   \footnotetext[1]{ Image sur  {http://www.100fps.com/}}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Artefact d'entrelacement }
+ 
+\begin{columns}[c]  
+
+   \column{.5\textwidth}
+
+   \imgCaption{0.2}{scene1}{Champs comprenant les lignes paires}
+   \imgCaption{0.2}{scene2}{Champs comprenant les lignes impaires}
+
+   \column{.5\textwidth}
+   
+   \imgCaption{0.2}{scene1_2}{Image affiché}
+
+\end{columns}
+
+	\footnotetext[1]{ Image sur  {http://www.100fps.com/}}
+
+	
+\end{frame}
+
+
+\begin{frame}
+   \frametitle{ Artefact d'entrelacement }
+   
+   Vu l'effet de mélange de deux champs acquis à différents moments, il est impossible de désentrelacer la vidéo \textbf{ET}:\bigskip
+
+   \begin{itemize}
+      \item de garder une fréquence d'image constante \textbf{en plus}      \item de conserver la résolution d'image.
+   \end{itemize}\bigskip
+
+   \textbf{Excepté} dans les scènes sans aucun mouvement, il faut altérer un de ces deux points.
+
+\end{frame}
+
+\subsection{Désentrelacement de la vidéo}
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   
+   Les méthodes de désentrelacement que nous allons explorer:\bigskip
+
+   \begin{enumerate}
+      \item Ne rien faire (\textit{Weave});
+      \item Moyennage (\textit{Blending, average, combine fields});
+      \item Moyennage local (\textit{Area based blending});
+      \item Rejet (\textit{Discard});
+      \item Redimension (\textit{Resizing});
+      \item Bob (\textit{Line-doubling, Low-quality progressive Scan});
+      \item Adaptatif (\textit{Progressive Scan, Bob+Weave, hybrid}).
+   \end{enumerate}
+   
+\end{frame}
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   \framesubtitle{ Ne rien faire (\textit{Weave}) }
+
+   Avantages:
+
+   \begin{itemize}
+      \item Conserve la fréquence d'image;
+      \item Conserve la résolution de l'image.
+   \end{itemize}\bigskip
+
+   Désavantage:
+  
+   \begin{itemize}
+      \item  On ne désentrelace pas la vidéo $\rightarrow$ Effet de peigne dans les scènes dynamiques!
+   \end{itemize}
+  
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   \framesubtitle{ Moyennage }
+
+   \begin{figure}
+   \centering
+
+      \begin{tabular}{cc}
+      \includegraphics[scale=0.22]{img/blend1} &
+      \includegraphics[scale=0.22]{img/blend2}
+      \end{tabular}
+      \caption{Champs 1 et 2 redimensionnés verticalement}
+
+      \begin{tabular}{cc}
+      \includegraphics[scale=0.22]{img/before} &
+      \includegraphics[scale=0.22]{img/blend}
+      \end{tabular}
+      \caption{Image affiché avant et après désentrelacement}
+
+   \end{figure} 
+
+
+\end{frame}
+
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   \framesubtitle{ Algorithme du moyennage }
+
+\begin{small}
+   \begin{algorithm}[H]
+         \Entree{Champs 1, Champs 2}
+         \Sortie{Image}
+
+         \medskip
+         Redimension de Champs 1 de $(L, H)$ à $(L, 2H)$\;
+         Redimension de Champs 2 de $(L, H)$ à $(L, 2H)$\;
+         \medskip
+
+         \Pour{Tous les pixels $(x,y)$ de Champs 1 et Champs 2}
+         {
+            \medskip
+            $Image(x,y) \leftarrow \frac{Champs1(x,y)+Champs2(x,y)}{2}$\;       
+            \medskip    
+         }
+
+   \end{algorithm}
+\end{small}
+
+\end{frame}
+
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   \framesubtitle{ Moyennage }
+
+   Avantages:
+
+   \begin{itemize}
+      \item Enlève l'effet de peigne.
+   \end{itemize} \bigskip
+
+   Désavantage:
+
+   \begin{itemize}
+      \item Réduction de la résolution verticale;
+      \item Réduction de moitié de la fréquence d'image;
+      \item Ajout d'un effet "fantôme" global important.
+   \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   \framesubtitle{ Moyennage localisé }
+
+   \begin{figure}
+   \centering
+
+      \begin{tabular}{cc}
+      \includegraphics[scale=0.22]{img/blend1} &
+      \includegraphics[scale=0.22]{img/blend2}
+      \end{tabular}
+      \caption{Champs 1 et 2 redimensionnés verticalement}
+
+      \begin{tabular}{cc}
+      \includegraphics[scale=0.22]{img/before} &
+      \includegraphics[scale=0.22]{img/blendmiceteeth}
+      \end{tabular}
+      \caption{Image affiché avant et après désentrelacement}
+
+   \end{figure} 
+
+\end{frame}
+
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   \framesubtitle{ Algorithme du moyennage localisé }
+
+\begin{small}
+   \begin{algorithm}[H]
+         \Entree{Image combinant les champs 1 et 2}
+         \Sortie{Image moyenné localement}\medskip
+
+         Détection de lignes entrelacées \footnote[1]{L'algorithme de détection de lignes entrelacées est globalement basé sur la différence entre les images et la différence entre les champs. En utilisant un certain seuil, on peut contrôler la sensibilité du détecteur. Le détecteur, si trop sensible, peut détecter des bords comme étant des lignes entrelacées.}\;  \medskip     
+
+         \Pour{Tous les pixels $(x,y)$ des lignes entrelacés}
+         {
+            $Image(x,y) \leftarrow \frac{Image(x,y-1)+Image(x,y+1)}{2}$\;       
+                     
+         }
+
+   \end{algorithm}
+\end{small}
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   \framesubtitle{ Moyennage localisé }
+
+   Avantages:
+
+   \begin{itemize}
+      \item Retire l'effet de peigne.
+      \item Réduction de la résolution verticale \textbf{seulement} dans les zones de mouvement;
+   \end{itemize} \bigskip
+
+   Désavantage:
+
+   \begin{itemize}
+      \item Réduction de moitié de la fréquence d'image;
+      \item Ajout d'un effet "fantôme" local aux zones de mouvement.
+   \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   \framesubtitle{ Algorithme du rejet }
+
+\begin{small}
+   \begin{algorithm}[H]
+         \Entree{Champs 1 ou 2}
+         \Sortie{Image}
+         \medskip
+         Image $\leftarrow$ Champs 1 ou 2 redimensionné de $(L,H)$ à $(L,2H)$.
+   \end{algorithm}
+\end{small}
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   \framesubtitle{ Rejet }
+
+   Avantages:
+
+   \begin{itemize}
+      \item Enlève l'effet de peigne.
+   \end{itemize} \bigskip
+
+   Désavantage:
+
+   \begin{itemize}
+      \item Réduction de moitié de la résolution d'image;
+      \item Réduction de moitié de la fréquence d'image;
+      \item Perte importante d'information du mouvement.
+   \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   \framesubtitle{ Algorithme de redimension }
+
+\begin{small}
+   \begin{algorithm}[H]
+         \Entree{Champs 1 et 2}
+         \Sortie{Image 1 et 2}
+         \medskip
+         Image 1 $\leftarrow$ Champs 1 redimensionné de $(L,H)$ à $(L/2,H)$\;
+         Image 2 $\leftarrow$ Champs 2 redimensionné de $(L,H)$ à $(L/2,H)$\;
+   \end{algorithm}
+\end{small}
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   \framesubtitle{ Redimension }
+
+   Avantages:
+
+   \begin{itemize}
+      \item Enlève l'effet de peigne;
+      \item Pas de création de nouvelle information;
+      \item Ne réduit pas la fréquence d'image.
+   \end{itemize} \bigskip
+
+   Désavantage:
+
+   \begin{itemize}
+      \item Réduction du quart de la résolution d'image.
+   \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   \framesubtitle{ Algorithme de Bob }
+
+\begin{small}
+   \begin{algorithm}[H]
+         \Entree{Champs 1 et 2}
+         \Sortie{Image 1 et 2}
+         \medskip
+         \Pour{Toutes les lignes $x \in [0...H]$ de Champs 1 et Champs 2}
+         {
+            $Image 1(2x) \leftarrow Champ 1(x)$\;
+            $Image 1(2x+1) \leftarrow Champ 1(x)$\;
+            $Image 2(2x) \leftarrow Champ 2(x)$\;
+            $Image 2(2x+1) \leftarrow Champ 2(x)$\;                  
+         }
+
+   \end{algorithm}
+\end{small}
+
+\img{0.31}{bob}
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   \framesubtitle{ Bob }
+
+   Avantages:
+
+   \begin{itemize}
+      \item Enlève l'effet de peigne;
+      \item Ne réduit pas la fréquence d'image.
+   \end{itemize} \bigskip
+
+   Désavantage:
+
+   \begin{itemize}
+      \item Réduction de moitié de la résolution d'image;
+      \item Introduction d'artefact de Bob (effet d'aliasing);
+   \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   \framesubtitle{ Adaptatif (\textit{Bob + Weave}) }
+   
+\begin{footnotesize}
+   On combine les champs en mélangeant Bob et Weave: on double le image combinant les deux champs, mais aux endroits où l'on détecte des artefacts de désentrelacement, on utilise la ligne du dessus pour contrer l'effet de peigne:
+\end{footnotesize}
+\bigskip
+
+\begin{small}
+   \begin{algorithm}[H]
+         \Entree{Champs 1 et 2}
+         \Sortie{Image 1 et 2}
+         \medskip
+         Image Weave $\leftarrow$ Weave(Champs 1 et Champs 2)\;
+         Image 1 $\leftarrow$ Bob(Champs 1)\;
+         Image 2 $\leftarrow$ Bob(Champs 1)\;
+         \medskip
+         Détection des lignes $x$ du Image Weave ayant un effet de peigne\;
+         \medskip
+         \Pour{Tous les lignes $y \neq x$ n'ayant pas un effet de peigne}
+         {
+            $Image 1(x) \leftarrow ImageWeave(x)$\;
+            $Image 2(x) \leftarrow ImageWeave(x)$\;                 
+         }
+
+   \end{algorithm}
+\end{small}
+
+\end{frame}
+
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   \framesubtitle{ Adaptatif (\textit{Bob + Weave}) }
+
+   \begin{figure}
+   \centering
+
+      \begin{tabular}{cc}
+      \includegraphics[scale=0.28]{img/bob} &
+      \includegraphics[scale=0.28]{img/weave}
+      \end{tabular}
+      \caption{Bob et Weave séparément}
+
+      \begin{tabular}{c}
+      \includegraphics[scale=0.28]{img/adaptive}
+      \end{tabular}
+      \caption{Adaptif (\textit{Bob + Weave})}
+
+   \end{figure} 
+
+   \footnotetext[1]{ Image sur  \url{http://www.anandtech.com/show/536/7}}
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{  Désentrelacement de la vidéo  }
+   \framesubtitle{ Adaptatif (\textit{Bob + Weave}) }
+
+   Avantages:
+
+   \begin{itemize}
+      \item Enlève l'effet de peigne (dépend de l'algorithme de détection de peigne);
+      \item Ne réduit pas la fréquence d'image;
+      \item Ne réduit pas la résolution de l'image dans les zones statiques.
+   \end{itemize} \bigskip
+
+   Désavantage:
+
+   \begin{itemize}
+      \item Introduction (réduite) d'artefact de Bob (effet d'aliasing).
+   \end{itemize}
+
+\end{frame}
+
+
+
+\section{Représentation de la logique temporelle}
+
+\begin{frame}
+   \frametitle{Plan de présentation}
+   \tableofcontents[currentsection]
+\end{frame}
+
+\subsection{Domaine fréquentiel}
+
+\begin{frame}
+	\frametitle{ Rappel: Fourier }
+	On peut voir la vidéo comme étant une image variant avec le temps. C'est en quelque sorte une 3e dimension que l'on ajoute à l'image et qui possède des propriétés spéciale, un lien que l'on qualifiera de mouvement.\bigskip
+
+	Tout comme pour l'analyse d'image, la transformée de Fourier ($\mathscr{F}$) est utilisée pour passer au domaine fréquentiel de la vidéo. 
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Rappel: Fourier }
+
+	Soit $I(x,y,t)$ l'intensité d'un pixel $(x,y)$ de la vidéo au temps $t$.  Si nous supposons que la vidéo est
+une fonction continue, la transformée de Fourier $\mathscr{F}$ de $I$ sera donnée par l'intégrale suivante: \medskip
+
+	\begin{scriptsize}	
+	\begin{eqnarray*}
+	\hat{I}(u,v,\tau)&=& \mathscr{F}(I) \nonumber \\
+	&=& \int_{-\infty}^{+\infty} \int_{-\infty}^{+\infty} \int_{-\infty}^{+\infty} I(x,y,t) \cdot \textrm{exp} \left\{ -2\pi j (ux+vy+\tau t) \right\}dxdydt,
+	\end{eqnarray*}
+	\end{scriptsize}
+
+	\begin{columns}[c]
+	
+	\column{.3\textwidth}
+
+	\column{.7\textwidth}
+	\footnotesize
+		\begin{itemize}
+			\item[$u$, $v$] Fréquences spatiales dans le sens horizontal et vertical de la vidéo
+			\item[$\tau$] Fréquence temporelle
+		\end{itemize}
+	\normalsize
+	\end{columns}
+
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Rappel: Fourier }
+
+	La transformée de Fourier inverse de la vidéo $\mathscr{F}^{-1}$ est obtenue par l'intégrale suivante:
+
+	\begin{scriptsize}	
+	\begin{eqnarray*}
+	I(x,y,t)&=& \mathscr{F}^{-1}(\hat{I}) \nonumber \\
+			&=& \int_{-\infty}^{+\infty} \int_{-\infty}^{+\infty} \int_{-\infty}^{+\infty} \hat{I}(u,v,\tau) \cdot
+				\textrm{exp} \left\{ 2\pi j (ux+vy+\tau t) \right\}dudvd\tau
+	\end{eqnarray*}
+	\end{scriptsize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Fourier pour la vidéo numérique }
+	
+	Dans le cas de la vidéo numérique, on utilise la FFD suivante:
+	
+	\begin{scriptsize}	
+	\begin{eqnarray*}
+	\hat{I}(u,v,\tau) &=& \mathscr{F}(I) \nonumber \\
+			&=& \frac{1}{MNK}\sum_{t=0}^{K} \sum_{x=0}^{M} \sum_{y=0}^{N} I(x,y,t)\cdot \textrm{exp} \left\{ -2\pi j (u\frac{x}{M}+v\frac{y}{N}+\tau \frac{t}{K}) \right\}
+	\end{eqnarray*}
+	\end{scriptsize}
+	
+	Et la transformée inverse:
+	
+	\begin{scriptsize}	
+	\begin{eqnarray*}
+ I(x,y,t) &=& \mathscr{F}^{-1}(\hat{I}) \nonumber \\
+ 		  &=& \sum_{\tau=0}^{K} \sum_{u=0}^{M} \sum_{v=0}^{N} \hat{I}(u,v,\tau) \cdot \textrm{exp} \left\{ 2\pi j (u\frac{x}{M}+v\frac{y}{N}+\tau \frac{t}{K}) \right\}
+	\end{eqnarray*}
+	\end{scriptsize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Mouvement rectiligne en Fourier }
+
+	Supposons qu'un objet se déplace dans la scène avec un
+mouvement rectiligne de vitesse constante $\vec{V}(v_x,v_y)$.
+	
+\medskip
+
+	Soit $I(x,y,t_0)$ le premier image de la séquence. La transformée de
+Fourier de la vidéo est alors donnée par:
+
+\begin{scriptsize}
+\begin{eqnarray*} \hat{I}(u,v,\tau) = \int_{-\infty}^{+\infty} \int_{-\infty}^{+\infty} \int_{-\infty}^{+\infty}  && I(x,y,t) \cdot \textrm{exp} \left\{ -2\pi j (ux+vy+\tau t) \right\} dxdydt \\
+	= \int_{-\infty}^{+\infty} \int_{-\infty}^{+\infty} \int_{-\infty}^{+\infty} &&  I(x-v_xt,y-v_yt,t_0) \cdot \nonumber  \\ &&
+	\textrm{exp} \left\{ -2\pi j (u(x-v_xt)+v(y-v_yt))\right\} \nonumber \\ &&
+	\textrm{exp} \left\{ -2\pi j (u v_x+ v v_y+\tau) t \right\}dxdydt
+\end{eqnarray*}
+\end{scriptsize}
+
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Mouvement rectiligne en Fourier }
+
+	En posant le changement de variables $x'=x-v_xt$ et $y'=y-v_yt$, l'équation peut
+être réécrite comme suit:
+
+\begin{small}
+\begin{eqnarray*} \hat{I}(u,v,\tau) = \int_{-\infty}^{+\infty} \int_{-\infty}^{+\infty} && I(x',y',t_0) \cdot \textrm{exp} 
+\left\{-2\pi j (ux'+vy')\right\} dx'dy' \nonumber \\ && 
+	\cdot  \int_{-\infty}^{+\infty} \textrm{exp} \left\{ -2\pi j (u v_x+ v v_y+\tau) t \right\}dt \\ 
+	= \hat{I}_0(u,v) &\cdot& \hat{\delta} (u v_x+ v v_y +\tau)
+\end{eqnarray*}
+\end{small}
+
+	
+	\begin{columns}[c]
+	
+	\column{.3\textwidth}
+
+	\column{.7\textwidth}
+	\footnotesize
+		\begin{itemize}
+			\item[$\hat{I}_0(u,v)$] \textit{\textit{TF}} du premier image.
+			\item[$\hat{\delta}$] \textit{TF} de la fonction de Dirac.
+		\end{itemize}
+	\normalsize
+	\end{columns}
+
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{ Mouvement rectiligne en Fourier }
+
+\begin{small}
+\begin{eqnarray} \hat{I}(u,v,\tau) = \hat{I}_0(u,v) &\cdot& \hat{\delta} (u v_x+ v v_y +\tau)
+\end{eqnarray}
+\end{small}
+
+	Par les propriétés de la \textit{TF} d'une $\delta$ , on sait que pour que la \textit{TF} de la vidéo soit nulle, en supposant \textit{TF} du premier image non-nulle, alors \textbf{l'expression de la $\delta$ ($u v_x+ v v_y + \tau$) doit être nulle.} \medskip
+	
+	\begin{small}
+		\begin{eqnarray*} 
+			\mathscr{F}^{-1} ( \hat{\delta} (u v_x+ v v_y +\tau) ) = 0 \\
+			u \cdot v_x + v \cdot v_y + \tau = 0
+		\end{eqnarray*}
+	\end{small}
+
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{ Mouvement rectiligne en Fourier }
+
+	On détermine alors la fréquence temporelle ($\tau$) par l'équation suivante:
+		
+	\begin{eqnarray*}
+	\tau = -u v_x- v v_y = - \langle (u,v),(v_x,v_y)\rangle
+	\end{eqnarray*}
+
+	Où  $\langle,\rangle$ désigne le produit scalaire. Si l'objet en mouvement est caractérisé par une fréquence spatiale $(u,v)$ (texture), alors la fréquence temporelle $\tau$ perçue dépendra directement de la vitesse du mouvement.
+
+
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{ Mouvement rectiligne en Fourier }
+
+	\begin{itemize}
+		\item Si $u=v=0$ (objet avec une couleur constante), alors $\tau=0$. Cela veut dire que peu importe la vitesse de l'objet, on ne percevra aucun changement temporel.
+    	\item Si $(u,v)\perp(v_x,v_y)$ alors $\tau=0$. Cela veut dire que si l'objet se déplace dans la direction perpendiculaire à la fréquence de changement des motifs de sa texture, alors on ne  percevra aucun changement temporel. Si, par contre, $(u,v) \parallel (v_x,v_y)$, alors le changement temporel perçu sera maximal.
+	\end{itemize}\medskip
+
+\end{frame}
+
+\subsection{Mouvement 2D et 3D}
+
+\begin{frame}
+	\frametitle{ Le modèle du mouvement 2D vs 3D }
+
+	Quand un objet dans la scène ou la caméra est en mouvement, la projection d'un point d'un objet de la scène subira également un mouvement. \bigskip
+	
+	Soit un point $P(X,Y,Z)^T$ sur la scène à l'instant $t_1$, qui se déplace vers le point $P'(X',Y',Z')^T = (X+\Delta X,Y+\Delta Y,Z+\Delta Z)^T$, à l'instant $t_2>t_1$.\medskip
+	
+	La projection de ce  point dans l'image se déplacera du point $p(x,y)^T$ vers le point $p'(x',y')^T=(x+d_x,y+d_y)^T$ 
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{  Le modèle du mouvement 2D vs 3D  }
+	
+	\img{0.35}{Mouvement2D3D}
+	\begin{small}		
+	 On appellera alors $(\Delta X,\Delta Y,\Delta Z)^T$
+le vecteur de déplacement 3-D et $(d_x,d_y)^T$ le vecteur de déplacement 2-D. \medskip
+
+L'ensemble des vecteurs $(d_x,d_y)^T$ dans l'image s'appelle \textbf{le champ de mouvement 2-D}.
+	\end{small}
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Le modèle du mouvement }
+	\framesubtitle{ La vitesse }
+	
+   \textbf{NOTE:}\medskip
+
+	Dans le domaine de la vidéo, on utilise parfois la vitesse $\left(\frac{dx}{dt}, \frac{dy}{dt}\right)$ au lieu due déplacement $(dx, dy)$. \medskip
+
+   $\rightarrow$ Cela dépend entièrement de l'application!\bigskip
+
+	\textbf{Question}: \\
+	Dans quel cas le vecteur de déplacement 2D ne peut être défini?
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Cas de vitesse 2-D indéfinie }
+
+	\begin{enumerate}
+		\item \textbf{Cas de sortie}: Un point du image 1 qui, au image 2 ne se trouve plus dans le champs de la vidéo.
+		\item \textbf{Cas d'entrée}: Un point du image 2 qui ne se trouvait pas au image 1.
+		\item \textbf{Cas d'occlusion}: Un point du image 1 qui était caché par un autre objet est maintenant découvert, et vice-versa.
+		\item \textbf{Cas d'ouverture}: L'intérieur d'un objet texturé à illumination constante.
+	\end{enumerate}
+		
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Cas d'occlusion }
+
+	\img{0.5}{Occlusion}	
+		
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{ Correspondance mouvement 2D et 3D }
+	\framesubtitle{ Cas général}
+	
+	Supposons que nous n'aurons toujours que des déplacements rigides (rotation et translation 3D) et que la caméra est fixe.
+	
+		 L'image du point $P(X,Y,Z)^T$ est le point $P'(X',Y',Z')^T$, donné par:
+
+	\begin{eqnarray*}
+		P'&=&\mathbf{R}P+\mathbf{T}
+	\end{eqnarray*}
+	En ayant $\mathbf{R} = \left( \begin{array}{ccc} 
+	r_1  &  r_2 & r_3 \\ 
+	r_4  &  r_5 & r_6 \\ 
+	r_7  &  r_8 & r_9 \\
+	\end{array}\right)$, alors on aura:
+	\begin{eqnarray*}
+		\left(\begin{array}{c}
+			X' \\
+			Y' \\
+			Z' \\
+		\end{array}\right)
+		&=& \left(\begin{array}{ccc}
+			r_1  &  r_2 & r_3 \\
+			r_4  &  r_5 & r_6 \\
+			r_7  &  r_8 & r_9 \\
+		\end{array}\right) \left(\begin{array}{c}
+			X \\
+			Y \\
+			Z \\\end{array}\right)
+		+ \left(\begin{array}{c}
+			T_X \\
+			T_Y \\
+			T_Z \\
+		\end{array}\right)
+	\end{eqnarray*}\\
+		
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Correspondance mouvement 2D et 3D  }
+	\framesubtitle{ Cas général}
+
+   \begin{footnotesize}
+   Supposons un modèle de correspondance suivant une projection perspective, où:
+
+   \begin{eqnarray}
+      \label{EQProj}
+      \begin{array}{ r l r l }
+         x = & f\dfrac{X}{Z}, & y = & f\dfrac{Y}{Z}
+      \end{array}
+   \end{eqnarray}\medskip
+	
+	On peut démontrer que le point 2D $(x',y')$ correspondant au point 3D $P'$ est donné par:
+
+   \begin{eqnarray*}
+   x'&=& f \frac{(r_1 x + r_2 y + r_3f)Z + T_X f}{(r_7 x + r_8 y + r_9f)Z +  T_Zf}\\
+   y'&=& f \frac{(r_4 x + r_5 y + r_6f)Z + T_Y f}{(r_7 x + r_8 y + r_9f)Z +  T_Zf}
+   \end{eqnarray*}\medskip
+
+   
+   $\rightarrow$ Changement d'échelle des paramètres $T_X$, $T_Y$,
+   $T_Z$ et la profondeur $Z$ du même facteur ne changera pas le résultat $(x',y')$ de la correspondance.\medskip
+
+   $\rightarrow$ Points 3D sur la même ligne de vue ont la même projection sur le plan de l'image.
+   \end{footnotesize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Correspondance mouvement 2D et 3D }
+	\framesubtitle{ Cas planaire}
+\begin{footnotesize} 
+   Lorsqu'un objet est planaire, on peut décrire les coordonnées de ses points par une équation du plan, de la forme: $Z=aX+bY+c$. \medskip
+   
+   En remplaçant la valeur de $Z$ dans les équations précédentes, et en utilisant les équations de la projection perspective (Eq.\ref{EQProj}), on démontre alors que le point 2D $(x',y')$ correspondant au point 3D $P'$ est donné par:
+
+\begin{eqnarray*}
+x'&=&  \frac{m_0+m_1x+m_2y}{1+e_1x+e_2y}\\
+y'&=&  \frac{n_0+n_1x+n_2y}{1+e_1x+e_2y}
+\end{eqnarray*}
+\bigskip
+
+   \begin{columns}[c]
+   
+   \column{.4\textwidth}
+
+   \column{.6\textwidth}
+   \footnotesize
+      \begin{itemize}
+         \item[$(m_0,m_1,m_2,n_0,n_1,n_2,e_1,e_2)$] Coefficients dépendants des paramètres de la matrice de rotation $\textbf{R}$, du vecteur de translation $(T_X,T_Y,T_Z)^T$ et des coefficients $a, b, c$ de l'équation du plan de l'objet.
+      \end{itemize}
+   \normalsize
+   \end{columns}
+
+\end{footnotesize}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{ Correspondance mouvement 2D et 3D  }
+	
+	Ce système de \textbf{mapping par projection} permet de modéliser directement la relation entre les projections d'un point d'un objet après mouvement de ce dernier. \bigskip
+
+	Pour enlever la contrainte d'objet planaire, on subdivise un objet en plusieurs parties planaires et on applique ensuite
+la projection pour chaque partie.
+	
+\end{frame}
+ 
+\subsection{Modèle de projection}
+
+\begin{frame}
+	\frametitle{ Effet de projection  }
+	
+	Le modèle de projection planaire permet de bien modéliser trois effets visuels importants:\medskip
+	
+	\begin{itemize}
+    	\item \emph{L'effet du chirping}: Augmentation  de la fréquence spatiale de motifs de textures en relation avec la profondeur.\medskip
+    	\item \emph{L'effet de convergence}: Convergence de lignes parallèles en relation avec la profondeur. Les points de convergence sont appelés \textbf{points de fuite}.\medskip
+      \item \emph{Linéarité}: On conserve la linéarité des lignes.
+	\end{itemize}
+	
+\end{frame}
+
+ \begin{frame}
+	\frametitle{ Approximation du modèle de projection }
+	\begin{small}	
+	Afin de réduire le nombre de coefficients à estimer et à supprimer les variables à optimiser au dénominateur, on utilise entre autres deux modèles: le modèle \textbf{affine} et \textbf{bilinéaire}.
+	\end{small}
+	
+	\img{0.42}{ProAffBil}
+			
+\end{frame}
+
+ \begin{frame}
+   \frametitle{ Approximation du modèle de projection }
+	
+	\img{0.45}{ProAffBil2}
+	\begin{scriptsize}Différents  modèles de mouvement et les vecteurs de déplacement qu'ils génèrent: (a) simple translation, (b) modèle affine, (c) modèle  bilinéaire et (d) application projective.
+	\end{scriptsize}
+	
+\end{frame}
+
+\begin{frame}
+   \frametitle{ Approximation du modèle de projection }
+	\framesubtitle{ Modèle affine }
+	
+	Le modèle affine est souvent utilisé pour décrire le mouvement 3D sous la projection orthographique. Ce modèle est adapté aux objets lointains.
+	\begin{eqnarray*}
+x'&=&  m_0+m_1x+m_2y\\
+y'&=&  n_0+n_1x+n_2y
+	\end{eqnarray*}
+
+	\begin{itemize}
+		\item[$\rightarrow$] 6 paramètres à estimer $(m_0,m_1,m_2,n_0,n_1,n_2)$.
+		\item[$\rightarrow$]  Préserve les proportions de longueurs et le parallélisme de segments.
+		\item[$\rightarrow$] Ne capte pas l'effet du \emph{chirping} et de \emph{convergence}, mais conserve la linéarité.
+	\end{itemize}
+	
+\end{frame}
+
+ \begin{frame}
+   \frametitle{ Approximation du modèle de projection }
+	\framesubtitle{ Modèle bilinéaire }
+	
+	Le modèle bilinéaire peut être vu comme une transformation d'un carré en un quadrangle. Il approxime bien le modèle de projection pour les objets peu texturés, les déformations étant moins drastiques.
+
+	\begin{eqnarray*}
+x'&=&  m_0+m_1x+m_2y + m_3xy\\
+y'&=&  n_0+n_1x+n_2y + n_3xy
+	\end{eqnarray*}
+
+	\begin{itemize}
+		\item[$\rightarrow$] 8 paramètres à estimer $(a_0,a_1,a_2,a_3,b_0,b_1,b_2,b_3)$.
+		\item[$\rightarrow$] Capte l'effet de \emph{convergence}.
+		\item[$\rightarrow$] Ne préserve pas la linéarité des contours et le \emph{chirping}.
+	\end{itemize}
+\end{frame}	
+
+
+\subsection{Mouvement apparent}
+
+\begin{frame}
+	\frametitle{ Mouvement apparent }
+	
+	En analyse de la vidéo, le mouvement réel ne correspond pas toujours au mouvement que l'on perçoit. Ce dernier est cependant le plus important, car c'est la perception qui influence le traitement de l'image et la vidéo.\bigskip
+	
+	Les deux grandes sources de différences entre le mouvement réel et le mouvement apparent sont:
+	
+	\begin{itemize}
+		\item Les mouvements de la caméra
+		\item L'illumination
+	\end{itemize}
+	
+\end{frame}
+
+ \begin{frame}
+	\frametitle{ Le mouvement apparent }
+	\frametitle{ Le modèle de la caméra }
+	
+	\img{0.33}{Camera}
+	
+\begin{footnotesize}	
+	\begin{enumerate}
+		\item \textbf{Boom}, \textbf{track}, \textbf{dolly} $\Rightarrow$ Translation
+		\item \textbf{Pan}, \textbf{tilt}, \textbf{roll} $\Rightarrow$ Rotation
+		\item \textbf{Zoom} $\Rightarrow$ Changement de focale
+	\end{enumerate}
+ \end{footnotesize}
+ 
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Le mouvement apparent }
+	\framesubtitle{ Le modèle de la caméra }
+	
+		On réfère les mouvements de la caméra à des \textbf{mouvements globaux} de la scène.\bigskip
+		
+		On note aussi que le \textit{zoom} et le \textit{dolly} ont le même effet en terme de mouvement apparent, c'est-à-dire un changement d'échelle.\bigskip
+		
+		Voyons les formes paramétriques de ces mouvements de caméra.
+		
+\end{frame}
+
+ \begin{frame}
+	\frametitle{ Le modèle de la caméra }
+	\framesubtitle{ Translation de la caméra }
+	
+	Les mouvements \textit{Track} et \textit{Boom}  correspondent à des translations horizontales et verticales de la caméra, respectivement: $(T_X,T_Y,T_Z)^T$, où $T_Z=0$.
+	
+	\begin{eqnarray*} \left( \begin{array}{c}
+ 		X' \\
+  		Y' \\
+  		Z' \\
+  	\end{array} \right)
+  	=\left( \begin{array}{c}
+  		X \\
+  		Y \\
+  		Z \\
+	\end{array} \right)
+  	+ \left( \begin{array}{c}
+		T_X \\
+		T_Y \\
+		0 \\
+	\end{array} \right),
+	\end{eqnarray*}
+	
+	Par les équations de projection perspective (Eq.\ref{EQProj}) et sachant que $Z=Z'$, alors le point 2D $(x', y')$ correspondant au point $(X,Y,Z)$ est donné par:
+
+	\begin{eqnarray*} \label{EQ3_115}
+	\left(
+	\begin{array}{c}
+ 		x' \\
+  		y' \\
+	\end{array}
+	\right)
+	=
+	\left(
+	\begin{array}{c}
+ 		x \\
+  		y \\
+	\end{array}
+	\right)
+	+
+	\underbrace{\left(
+	\begin{array}{c}
+  		f \frac{T_X}{Z} \\
+  		f \frac{T_Y}{Z} \\
+	\end{array}
+	\right)
+	}_{(d_x,d_y)^T}
+	\end{eqnarray*}
+	
+\end{frame}
+\begin{frame}
+	\frametitle{ Le modèle de la caméra }
+	\framesubtitle{ Rotation de la caméra }
+	
+	Les mouvements \textit{Tilt} et \textit{Pan} correspondent à des rotations autour des axes $X$ et des $Y$, respectivement: ${R}_X$ et ${R}_Y$ 
+	\begin{eqnarray*} \label{EQ3_116}
+		\textbf{R}_X &=&
+		\left(
+		\begin{array}{ccc}
+  			1 & 0 & 0 \\
+  			0 & \textrm{cos}(\theta_X) & -\textrm{sin}			(\theta_X) \\
+  			0 & \textrm{sin}(\theta_X) &  \textrm{cos}(\theta_X) \\
+		\end{array}
+		\right),\\
+		\textbf{R}_Y &=&	
+		\left(
+		\begin{array}{ccc}
+ 		\textrm{cos}(\theta_Y)  & 0 &   \textrm{sin}(\theta_Y)  \\
+ 			 0 & 1& 0\\
+  		-\textrm{sin}(\theta_Y) &  0 &  \textrm{cos}(\theta_Y) \\
+		\end{array}
+		\right),
+	\end{eqnarray*}
+	
+	où $\theta_X$ et $\theta_Y$ sont les angles de rotations autour des axes $X$ et des $Y$, respectivement. 
+	
+\end{frame}
+
+ \begin{frame}
+	\frametitle{ Le modèle de la caméra }
+	\framesubtitle{ Rotation de la caméra }
+	
+	Supposons un petit angle de rotation (i.e. $\textrm{sin}(\theta_X) \simeq \theta_X$, $\textrm{sin}(\theta_Y) \simeq \theta_Y$, $\textrm{cos}(\theta_X) = \textrm{cos}(\theta_Y) \simeq 1$), alors le mouvement 3-D d'un point $(X,Y,T)^T$ sera: 
+\begin{eqnarray*} \label{EQ3_117}
+\left(
+\begin{array}{c}
+  X' \\
+  Y' \\
+  Z' \\
+\end{array}
+\right)
+&=&
+\textbf{R}_X \textbf{R}_Y
+\left(
+\begin{array}{c}
+  X \\
+  Y \\
+  Z\\
+\end{array}
+\right)\\
+&=&
+\left(
+\begin{array}{ccc}
+  1&0&-\theta_Y \\
+  0&1&-\theta_X \\
+  \theta_Y&\theta_X &1 \\
+\end{array}
+\right)
+\left(
+\begin{array}{c}
+  X \\
+  Y \\
+  Z\\
+\end{array}
+\right)
+\end{eqnarray*}
+	
+	Finalement, si $X \theta_Y \ll Z$ et  $Y \theta_X \ll Z$, et si $Z\approx Z'$, alors:
+
+\begin{eqnarray*} \label{EQ3_118}
+\left(
+\begin{array}{c}
+  x' \\
+  y' \\
+\end{array}
+\right)
+= \left(
+\begin{array}{c}
+  x \\
+  y \\
+\end{array}
+\right)
++
+\underbrace{\left(
+\begin{array}{c}
+ -\theta_Y f  \\
+ -\theta_X f \\
+\end{array}
+\right)}_{(d_x,d_y)^T}
+\end{eqnarray*}
+
+\end{frame}
+\begin{frame}
+	\frametitle{ Le modèle de la caméra }
+	\framesubtitle{ Rotation de la caméra }
+
+	Le mouvement \textit{Roll} correspond à la rotation autour de l'axe des $Z$. Soit $\textbf{R}_Z$ la matrice de rotation autour de cet axe, qui est donnée par:
+
+\begin{eqnarray*} \label{EQ3_119}
+\textbf{R}_Z =
+\left(
+\begin{array}{ccc}
+\textrm{cos}(\theta_Z)  &  -\textrm{sin}(\theta_Z)& 0 \\
+\textrm{sin}(\theta_Z)  & \textrm{cos}(\theta_Z)  &   0 \\
+0 & 0 & 1 \\
+\end{array}
+\right)
+\end{eqnarray*}
+
+	Après un mouvement de \textit{Roll}, en supposant un angle petit, on aura:
+
+\begin{eqnarray*}
+\left(
+\begin{array}{c}
+  x' \\
+  y' \\
+\end{array}
+\right)
+= \left(
+\begin{array}{c}
+  x \\
+  y \\
+\end{array}
+\right)
++
+\underbrace{\left(
+\begin{array}{c}
+ -\theta_Z y  \\
+ \theta_Z x \\
+\end{array}
+\right)}_{(d_x,d_y)^T}
+\end{eqnarray*}
+
+\end{frame}
+
+ \begin{frame}
+	\frametitle{ Le modèle de la caméra }
+	\framesubtitle{ Changement d'échelle de la caméra }
+	
+	Les mouvement \textit{Zoom} et \textit{Dolly} correspondent à des changements d'échelle, où le facteur varie selon le mouvement:
+	
+	\begin{eqnarray*} \label{EQ3_120}
+\left(
+\begin{array}{c}
+  x' \\
+  y' \\
+\end{array}
+\right)
+&=& \left(
+\begin{array}{c}
+  \rho x \\
+  \rho y \\
+\end{array}
+\right)\\
+&=& \left(
+\begin{array}{c}
+  x \\
+  y \\
+\end{array}
+\right) + \underbrace{\left(
+\begin{array}{c}
+ \rho x -x \\
+ \rho y -y \\
+\end{array}
+\right)}_{(d_x,d_y)^T}
+\end{eqnarray*}\\
+
+\textit{Zoom} $\rightarrow$ Changement de focale: $\rho= \frac{f}{f'}$ \\
+\textit{Dolly} $\rightarrow$ Changement de profondeur: $\rho = \frac{Z}{Z+T_Z}$
+
+\end{frame}
+
+ \begin{frame}
+	\frametitle{ Modèle de la caméra }
+	
+	Si la scène se déplace selon le même facteur que la caméra, aucun mouvement ne sera détecté, même si en vrai il y en a. Le \textbf{mouvement apparent} est nul.\medskip
+	
+	Le même raisonnement s'applique inversement, c'est-à-dire que si la scène est fixe et que la caméra bouge, un mouvement global important sera détecté, alors qu'en réalité il n'y avait aucun mouvement 3D de la scène. \medskip
+	
+	Ces mouvements globaux de caméra pourront être estimés, puis supprimés.
+	
+  \end{frame}
+
+\begin{frame}
+	\frametitle{ Mouvement apparent }
+	\framesubtitle{ Illumination }
+	
+	Les changements d'illumination sont problématiques pour la détection du mouvement.
+   \medskip
+
+   Le mouvement apparent est grandement affecté par la réflectivité, la transparence, l'irradiance, lorsque la source lumineuse bouge ou modifie son intensité. \medskip
+	
+	\img{0.5}{Illumination}
+	
+	L'intensité de la source modifie la texture apparente d'un objet.
+	
+\end{frame}
+
+ \begin{frame}
+	\frametitle{ Mouvement apparent }
+	\framesubtitle{ Illumination }
+	
+	Les algorithmes de détection de mouvement en général ne prennent pas en compte l'illumination. Le mouvement apparent résultant de l'illumination est considéré comme un déplacement réel.\bigskip
+	
+	Dans la plupart des cas, la contribution de l'illumination est minime et est considérée comme étant constante.
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Mouvement apparent }
+	\framesubtitle{ Texture }
+	
+	Il arrive parfois qu'un objet subit une transformation qui n'est pas apparente. Prenons exemple sur la rotation d'une sphère sans texture:
+	
+	\img{0.5}{MouvementApp}
+	
+	La rotation, bien que réelle, n'a en apparence aucun mouvement, l'absence de la texture n'apportant pas l'information nécessaire.
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Mouvement apparent }
+	\framesubtitle{ Déplacement dans la ligne de vue }
+	
+	Imaginons également une sphère qui s'éloigne sur une route. 
+		
+	\img{0.5}{ObjetApparent}
+	
+	Le mouvement apparent d'un changement d'échelle en x et y combiné à une translation en y est perçu. 
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Mouvement apparent }
+	\framesubtitle{ Objet }
+	
+	Les cas de texture et de déplacement dans la ligne de vue peuvent être ignorés.\medskip
+
+   Cependant, avec une connaissance \textit{a priori} de la modélisation de la scène, de l'objet à observer et des contraintes de mouvement de ce dernier, on peut connaître le déplacement réel.\bigskip
+	
+	Dans un cas de déplacement d'un véhicule dans le trafic, par exemple, on peut savoir que s'il y a un changement d'échelle, c'est dû à l'éloignement en Z.
+	
+\end{frame}
+
+
+\end{document}
+
+
+
+
