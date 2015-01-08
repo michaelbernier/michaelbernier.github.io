@@ -112,8 +112,8 @@
 	}
 	.center {
 		max-width:960px;
-		width:100%;
-		margin:0 auto;
+		width:90%;
+		margin: auto;
 	}
 	.hidden{display:none;}
 	.box-main:after,
