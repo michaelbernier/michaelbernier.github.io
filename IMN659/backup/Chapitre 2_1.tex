@@ -1,0 +1,1083 @@
+\documentclass[]{beamer}
+\usetheme{CambridgeUS}
+%\usecolortheme{crane}
+
+\usepackage{microtype}
+
+% Use utf-8 encoding for foreign characters
+\usepackage[latin1]{inputenc}
+\usepackage[french]{babel}
+\usepackage{textcomp}
+
+\usepackage{times}
+\usepackage{mathrsfs}
+\usepackage{amsmath}
+
+\usepackage{algorithmic}
+\usepackage[ruled]{algorithm2e}
+
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+% Setup for fullpage use
+% \usepackage{fullpage}
+
+% Uncomment some of the following if you use the features
+%
+% Running Headers and footers
+%\usepackage{fancyhdr}
+
+% Multipart figures
+\usepackage{subfigure}
+
+% More symbols
+\usepackage{amsmath}
+% \usepackage{amssymb}
+% \usepackage{latexsym}
+
+% Surround parts of graphics with box
+% \usepackage{boxedminipage}
+
+% Package for including code in the document
+\usepackage{listings}
+\usepackage{fancyvrb}
+
+% If you want to generate a toc for each chapter (use with book)
+% \usepackage{minitoc}
+
+% This is now the recommended way for checking for PDFLaTeX:
+\usepackage{ifpdf}
+
+%\newif\ifpdf
+%\ifx\pdfoutput\undefined
+%\pdffalse % we are not running PDFLaTeX
+%\else
+%\pdfoutput=1 % we are running PDFLaTeX
+%\pdftrue
+%\fi
+
+\usepackage[font={scriptsize, it}]{caption}
+\captionsetup{labelformat=empty,labelsep=none}
+
+\usepackage{graphicx}
+\usepackage{stmaryrd}
+\usepackage{movie15}
+
+\newcommand{\external}[2]
+{
+\begin{center} 
+\href{#1}{\color{blue}\underline{#2}}
+\end{center}
+}
+
+
+\newcommand{\fullscreenImg}[1]
+{
+   \begin{center}
+      \includegraphics[width=108mm,height=62mm,keepaspectratio]{img/#1}
+   \end{center}
+}
+
+\newcommand{\img}[2]
+{
+   \begin{figure}
+      \begin{center}
+         \includegraphics[scale=#1]{img/#2}
+      \end{center}
+   \end{figure}
+}
+
+\newcommand{\imgCaption}[3]
+{
+   \begin{figure}
+      \begin{center}
+         \includegraphics[scale=#1]{img/#2}
+         %\caption[Submanifold]{#3}
+         \caption{#3}
+      \end{center}
+   \end{figure}
+}
+
+\newcommand{\apriori}
+{
+   \textit{a priori}
+}
+
+\newcommand{\frameuptitle}[1]
+{
+   \underline{\textbf{#1}}\medskip
+}
+
+\newcommand{\Fourier}
+{
+   $\mathscr{F}$
+}
+
+\newcommand{\FourierInv}
+{
+   $\mathscr{F}^{-1}$
+}
+
+%
+%\setbeamertemplate{footline}
+%{
+%  \hbox{%
+%  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+%    \usebeamerfont{title in head/foot}Chapitre 1 - Représentation d'une vidéo numérique
+%  \end{beamercolorbox}%
+%  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+%    \usebeamerfont{date in head/foot}
+%    \insertframenumber{} / \inserttotalframenumber\hspace*{2ex} 
+%  \end{beamercolorbox}}%
+%  \vskip0pt%
+%}
+
+
+\title{Analyse de la vidéo}
+\subtitle {Chapitre 2.1 - Estimation du mouvement  }
+%\author{Michaël Bernier}
+\date{Dernière rév.:\\ \today}
+
+\begin{document}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \ifpdf
+% \DeclareGraphicsExtensions{.pdf, .jpg, .tif}
+% \else
+% \DeclareGraphicsExtensions{.eps, .jpg}
+% \fi
+
+\begin{frame}
+	\titlepage
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Définition générale du flux optique}
+
+\begin{frame}
+   \frametitle{Plan de chapitre}
+   \tableofcontents[currentsection]
+\end{frame}
+
+
+\subsection{Estimation du mouvement}
+
+\begin{frame}
+   \frametitle{ Estimation du mouvement }
+   \framesubtitle{ Mouvement apparent }
+
+   En étudiant le mouvement observé 2D, on tente d'\textbf{interpréter} le mouvement 3D réel ou l'action associée à ce mouvement 3D de la scène:
+
+   \begin{itemize}
+      \item Comment la caméra a-t-elle bougé?
+      \item Combien y a-t-il d'objets?
+      \item À quelle vitesse allaient-ils?
+      \item Reconnait-on une action dans le mouvement (marcher, courir, saluer, ...)?
+      \item ...
+   \end{itemize}
+                 
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Estimation du mouvement }
+	\framesubtitle{ Définition du flux optique }
+
+   \begin{itemize}
+    \item \textbf{Champs de mouvement 3D (\textit{Motion field}):} Ensemble des mouvements 3D réels. \medskip
+    \item \textbf{Flux optique:} Projection de l'ensemble des mouvements 3D dans un plan 2D.
+   \end{itemize}
+
+   \imgCaption{0.5}{CCD_flux}{Mouvement apparent VS Mouvement 3D}
+
+   \begin{center} Mouvement apparent $\iff$ Flux optique \end{center}
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{ Estimation du mouvement }
+   \framesubtitle{ Exemple d'application: Segmentation de mouvement}
+
+	
+	\begin{figure}
+	\centering
+	\includegraphics[width=.65\textwidth]{img/Ex_flow_1}
+	%\includegraphics[width=.45\textwidth]{img/Ex_flow_2}\\
+	%\includegraphics[width=.45\textwidth]{img/Ex_flow_3}
+	%\includegraphics[width=.45\textwidth]{img/Ex_flow_4}
+	\caption{Exemple de flux optique (sans gestion de l'occlusion)}
+	\end{figure}
+{\tiny 
+   J. Xiao et al, "Bilateral Filtering-Based Optical Flow Estimation with Occlusion Detection", 2006.
+   }
+\end{frame}
+\begin{frame}
+   \frametitle{ Estimation du mouvement }
+   \framesubtitle{ Exemple d'application: Segmentation de mouvement}
+
+	
+	\begin{figure}
+	\centering
+	\includegraphics[width=.55\textwidth]{img/Ex_flow_10}
+	%\includegraphics[width=.45\textwidth]{img/Ex_flow_2}\\
+	%\includegraphics[width=.45\textwidth]{img/Ex_flow_3}
+	%\includegraphics[width=.45\textwidth]{img/Ex_flow_4}
+	\caption{Exemple de flux optique avec représentation en flèche (avec gestion de l'occlusion)}
+	\end{figure}
+{\tiny 
+   J. Xiao et al, "Bilateral Filtering-Based Optical Flow Estimation with Occlusion Detection", 2006.
+}
+\end{frame}
+
+\begin{frame}
+	\frametitle{ Estimation du mouvement }
+
+	Le flux optique peut être le résultat:
+	\begin{itemize}
+      \item d'un mouvement d'objets et/ou de la caméra;
+      \item d'un changement d'illumination ou d'apparence des objets;
+      \item d'un changement de paramètres intrinsèques de la caméra (e.g. distance focale, ouverture, etc.).
+   \end{itemize}\bigskip
+   
+   On le représente par des vecteurs (\textit{arrows}) ou un code de couleur selon l'intensité et la direction du mouvement (\textit{colormap})
+
+   %\imgCaption{0.5}{flux_example}{Exemple de flux optique}
+
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Flux optique}
+   \framesubtitle{Mouvements de caméra}	
+   
+   Différents flux optiques dû aux mouvements de caméra:
+	
+	\fullscreenImg{moitionflux}
+	
+\end{frame}
+
+
+\begin{frame}
+   \frametitle{Flux optique}
+   \framesubtitle{Texture}   
+   
+   La texture a aussi un effet sur le flux optique par rapport aux mouvements 2D projetés:
+   
+   \img{0.4}{FlotOptique}
+   
+\end{frame}
+
+\begin{frame}
+	\frametitle{Flux optique}
+   \framesubtitle{Illumination}   
+
+	On a vu aussi que l'illumination influence le mouvement estimé:
+	
+	\img{0.6}{Illumination}	
+	
+	 Le mouvement perçu dépend donc aussi du type de surface des objets et  de l'illumination de la scène.\medskip
+
+\end{frame}
+
+\subsection{Équation du flux optique}
+
+\begin{frame}
+   \frametitle{Flux optique}
+   \framesubtitle{But}
+   
+   \textbf{BUT:}
+   
+   Estimer, pour chaque pixel, un vecteur de déplacement $\vec{V}=(v_x,v_y)$ exprimant:\bigskip
+
+      \begin{itemize}
+         \item La vitesse de déplacement d'un pixel dans le repère de l'image;
+         \item La direction vers laquelle le pixel se déplace.
+      \end{itemize}
+
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Flux optique}
+		\framesubtitle{Définition du problème}
+			
+	\textbf{MÉTHODE:}
+	\medskip
+	
+	{\small 
+   Supposons une \textbf{illumination constante} pour un point dans le temps et que \textbf{les propriétés d'illumination de l'objet sont conservées entre $t$ et $t+d_t$}, on aura alors:
+
+   \begin{eqnarray}
+I(x+d_x,y+d_y,t+d_t)=I(x,y,t) \label{EQ_illumination}
+   \end{eqnarray} \medskip
+
+	En supposant que le \textbf{mouvement est petit}, on peut utiliser les série de Taylor pour développer le terme de gauche:
+
+	   \begin{eqnarray}
+	   I(x+d_x,y+d_y,t+d_t)\simeq I(x,y,t) + \frac{\partial I}{\partial x} d_x +
+	   \frac{\partial I}{\partial y} d_y + \frac{\partial I}{\partial t}
+	   d_t + TOS \label{EQ_illumination_2}
+	   \end{eqnarray}}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Flux optique}
+	\framesubtitle{Définition du problème}
+			
+	On peut alors simplifier l'Eq.\ref{EQ_illumination} en remplaçant le terme de gauche avec l'Eq.\ref{EQ_illumination_2}:
+
+\begin{eqnarray}
+ 	I(x,y,t) &\simeq& I(x,y,t) + \frac{\partial I}{\partial x} d_x +
+ 		   \frac{\partial I}{\partial y} d_y + \frac{\partial I}{\partial t}
+ 		   d_t    \nonumber \\
+ 		0 	 &\simeq& \frac{\partial I}{\partial x} d_x +
+   		 		   \frac{\partial I}{\partial y} d_y + \frac{\partial I}{\partial t} d_t \nonumber  \\
+   		0 	 &\simeq& \frac{\partial I}{\partial x} \frac{d_x}{d_t} +	 		   \frac{\partial I}{\partial y} \frac{d_y}{d_t} + \frac{\partial I}{\partial t} \frac{d_t}{d_t} \nonumber \\
+   		0 	 &\simeq& \frac{\partial I}{\partial x} v_x +	 		   \frac{\partial I}{\partial y} v_y + \frac{\partial I}{\partial t} \nonumber \\
+ 	-\frac{\partial I}{\partial t} &\simeq& \frac{\partial I}{\partial x} v_x +	 		   \frac{\partial I}{\partial y} v_y 
+\end{eqnarray}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Flux optique}
+	\framesubtitle{Problème du flux optique}
+
+   En posant l'expression de la vitesse du mouvement $\vec{V}=(v_x,v_y)$ et $\vec{\nabla} I(x,y)$ le gradient de l'image au point $(x,y)$, avec les dérivées partielles de l'image ($ I_x, I_y, I_t$):
+	
+\begin{eqnarray}\label{FLUXOPTIQUE}
+\begin{array}{ccc}
+\left( I_x v_x + I_y v_y \right)  & = & - I_{t} \\
+\vec{\nabla}I(x,y) \cdot  \vec{V} & = & - I_{t}  \\
+\end{array}
+\end{eqnarray}
+
+   L'équation ci-dessus (Eq.\ref{FLUXOPTIQUE}) est appelée \textbf{équation du flux optique}. Cette équation a deux variables ($v_x$ et $v_y$) et admet donc une infinité de solution.
+
+\end{frame}
+
+\subsection{Problème d'ouverture}
+
+\begin{frame}
+	\frametitle{Flux optique}
+	\framesubtitle{Problème d'ouverture}
+
+   \begin{footnotesize}
+   Exprimons géographiquement le problème des deux inconnus ($v_x$,$v_y$) de l'équation du flux optique (Eq.\ref{FLUXOPTIQUE}) pour un pixel $I(x,y)$: \bigskip
+
+   Soit la base orthonormée $(\vec{e}_n,\vec{e}_t)$, où $\vec{e}_n$ est parallèle au gradient de l'image $\vec{\nabla}I(x,y)$.\medskip
+
+   En exprimant le vecteur de vitesse $\vec{V}$ dans cette base, on aura alors $\vec{V} = v_n \vec{e}_n + v_t \vec{e}_t$.
+   \end{footnotesize}
+	\img{0.25}{Ouverture1}
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Flot optique}
+	\framesubtitle{Problème d'ouverture}
+	
+	On peut exprimer le problème d'une équation, deux inconnus ($\vec{V}$ = ($V_x$,$V_y$)) en effectuant un changement de base orthonormé $(\vec{e}_n,\vec{e}_t)$, où  ($\vec{e}_n \parallel \nabla I(x,y)$) et ($\vec{e}_n \bot \vec{e}_t$), on aura alors $\vec{V} = v_n \vec{e}_n + v_t \vec{e}_t$.
+	
+	\img{0.5}{Ouverture1}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Flot optique}
+	\framesubtitle{Problème d'ouverture}
+
+	En remplaçant la valeur de $\vec{V}$ dans Eq. (\ref{FLUXOPTIQUE}), on aura:
+	
+	\begin{eqnarray}
+&&\nabla I(x,y) \cdot \left[ v_n \vec{e}_n + v_t \vec{e}_t  \right] +  I_t = 0  \label{EQ2_9} \nonumber \\
+&\Rightarrow&  v_n \|\nabla I(x,y)\| + I_t = 0 \label{EQ2_10} \nonumber \\
+&\Rightarrow& v_n = \frac{I_t}{\|\nabla I(x,y)\|}\label{EQ2_11}
+\end{eqnarray}
+
+On a démontré que pour un point $(x,y)$, on peut résoudre l'équation du flux optique pour la composante $v_n$, parallèle au gradient de l'image. Cependant, la composante $v_t$ peut avoir une infinité de valeurs (une droite dans le plan) satisfaisant  Eq. (\ref{EQ2_11}).
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Flux optique}
+	\framesubtitle{Problème d'ouverture}
+
+   Pour un point $(x,y)$, on connait la composante $v_n$, parallèle au gradient de l'image. Cependant, la composante $v_t$ peut avoir une infinité de valeurs qui satisfont Eq. (\ref{FLUXOPTIQUE}). \medskip
+
+	C'est ce qu'on appelle le \textbf{problème d'ouverture}:
+	
+	\img{0.4}{Ouverture2_1}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Flux optique}
+	\framesubtitle{Problème d'ouverture}
+	
+	\img{0.4}{Ouverture2_2}
+	
+	On connait toujours la valeur de la composante dans le sens du gradient $\vec{\nabla}I(x,y)$, mais sans une vue globale de la scène, on ne peut connaître la valeur dans le sens parallèle.
+	
+\end{frame}
+
+\begin{frame}
+
+	\frametitle{Flux optique}
+	\framesubtitle{Résumé du problème de la détermination du flux optique}
+	
+	Ce qui peut fausser la détermination du flux optique à un point $(x,y)$:\medskip
+	
+	\begin{enumerate}
+		\item Un mouvement non-léger (Le développement de Taylor n'est pas valide);
+		\item Le mouvement du point n'est pas comparable aux points au voisinage;
+      \item Une illumination non-constante;		
+      \item Aliasing. \medskip
+	\end{enumerate}
+		
+	Les algorithmes de calcul du flux optique chercheront donc à résoudre le problème d'ouverture en ces différentes problématiques.	
+
+\end{frame}
+
+
+
+\subsection{Catégorisation des algorithmes d'estimation du mouvement}
+
+\begin{frame}
+
+	\frametitle{Estimation du flux optique}
+	\framesubtitle{Résumé des différentes approches}
+	
+	Différentes approches pour la résolution du flux optique:\medskip
+	
+	\begin{enumerate}
+		\item Approche par intensité:
+      \begin{itemize}
+         \item Méthodes basées sur un terme de régularisation;
+         \item Méthodes basées sur les équations à régression linéaire (ERL).
+      \end{itemize}\medskip
+
+		\item Approche par primitive d'intensité:
+      \begin{itemize}
+         \item Méthodes basées sur l'association de blocs, patches, ...;
+         \item Méthodes hiérarchiques;
+         \item Méthodes basées sur le maillage.
+      \end{itemize}
+	\end{enumerate}
+	
+\end{frame}
+
+
+\section{Estimation du flux optique - Intensité}
+
+\begin{frame}
+   \frametitle{Plan de chapitre}
+   \tableofcontents[currentsection]
+\end{frame}
+
+\subsection{Lucas et Kanade}
+
+\begin{frame}
+   \frametitle{Lucas et Kanade}	
+   \framesubtitle{Approche par intensité - Équation à régression linéaire}
+
+	
+	La méthode de \textbf{Lucas-Kanade 1984} est une méthode déterministe d'intensité basée sur une équation à régression linéaire.\medskip
+	
+	C'est une méthode locale: elle ne peut pas fournir le flux à l'intérieur d'une région uniforme \medskip
+	
+   On suppose:
+   
+   \begin{enumerate}
+      \item Petits mouvements;
+      \item Illumination constante;
+      \item Mouvements constants dans un voisinage près (avec un facteur de lissage).
+   \end{enumerate}
+	
+\end{frame}
+
+\begin{frame}
+   \frametitle{Lucas et Kanade}  
+   \framesubtitle{Approche par intensité - Équation à régression linéaire}
+	
+	Supposons que $W(n)$ est une fenêtre centrée sur le pixel $n=(x,y)$
+
+	\img{0.5}{LucasKanade}
+	
+	 et soit $G(n)$ un noyau gaussien pondérant les pixels de la fenêtre $W(n)$ par la distance par rapport à $n$ 
+	 
+\end{frame}
+
+\begin{frame}
+	\frametitle{Approche ERL d'intensité} 
+	\framesubtitle{Lucas et Kanade}
+\begin{small}	
+	L'estimation du vecteur de mouvement $\vec{V}(n)=(v_x(n),v_y(n))^T$
+pour le pixel $n=(x,y)$ revient  alors à minimiser l'équation du flux optique à l'aide des moindres-carrés (fonction de coût "$E$"):
+
+	\begin{eqnarray*}
+	E(\vec{V}(n)) & = & \!\sum_{(n_i)\in W(n)} \left[ G(n_i)I_x(n_i)*v_x(n_i) + G(n_i)I_y(n_i)*v_y(n_i) + I_t(n_i) \right]^2 \\
+	  & = & \sum_{(n_i)\in W(n)} \left[G(n_i) \nabla I (n_i) \cdot \vec{V} + I_t (n_i) \right]^2
+	\end{eqnarray*}
+
+
+	On cherche à minimiser l'énergie $E$, donc à résoudre $\frac{\partial E(\vec{V})}{\partial \vec{V}} =\textbf{0}$, donnée par:
+		
+\begin{footnotesize}	
+\begin{eqnarray*}
+\frac{\partial E(\vec{V}(n))}{\partial \vec{V}} = \! 
+\sum_{(n_i)\in W(n)} \! \nabla I^T (n) G(n_i)\cdot \left[ G(n_i) \nabla I(n_i) \cdot \vec{V} + I_t (n_i) \right] =  
+\textbf{0}
+\label{EQ_L_K1}
+\end{eqnarray*}
+\end{footnotesize}
+	\end{small}	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Approche ERL d'intensité}
+	\framesubtitle{Lucas et Kanade}
+	
+	On peut représenter l'équation sous forme matricielle; Soient $\textbf{W}_{N x N}$, $\textbf{B}_{N\times1}$ et $\textbf{A}_{N\times2}$ des matrices définies comme suit:
+	
+\begin{itemize}
+    \item $\textbf{W} = \textrm{diag} [W(x_1,y_1), \dots, W(x_N,y_N)]^T$  $\rightarrow$\textit{ Pondération gaussienne}
+    \item $\textbf{B} = [I_t(x_1,y_1), \dots, I_t(x_N,y_N)]^T$ $\rightarrow$ \textit{ $I_t$}
+     \item $\textbf{A} = \left[\begin{array}{c}
+      I_x(x_1,y_1), \dots, I_x(x_N,y_N) \\
+      I_y(x_1,y_1), \dots, I_y(x_N,y_N) \\
+    \end{array} \right]^T$ $\rightarrow$ \textit{Wradient}
+\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Approche ERL d'intensité}
+	\framesubtitle{Lucas et Kanade}
+	
+	On peut alors réécrire Eq. (\ref{EQ_L_K1}) comme suit:
+\begin{eqnarray*}
+&& \mathbf{A}^T \mathbf{W}^T \left[\mathbf{W} \mathbf{A} \vec{V}+ \mathbf{B} \right] = \textbf{0}\\
+&\Rightarrow& \mathbf{A}^T \mathbf{W}^T \mathbf{W} \mathbf{A} \vec{V} = -\mathbf{A}^T \mathbf{W}^T \mathbf{B}
+\end{eqnarray*}
+
+	Aans le cas où $\mathbf{A}^T \mathbf{W} \mathbf{A}$ n'est pas singulière,
+on peut calculer  le vecteur de mouvement de manière déterministe par:
+
+\begin{eqnarray*}
+\vec{V} & = & -  \left[\mathbf{A}^T \mathbf{W} \mathbf{A}\right]^{-1}\mathbf{A}^T \mathbf{W} \mathbf{B}
+\end{eqnarray*}
+
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Approche ERL d'intensité}
+	\framesubtitle{Lucas et Kanade}
+	
+	\begin{eqnarray}\label{LK}
+\begin{array}{ccccc}
+\vec{V} & = & \left( \mathbf{A^{T} W^2 A} \right)^{-1} & \cdot & A^T W^T b \\
+
+\left[ {\begin{array}{c}
+ v_x  \\
+ v_y  \\
+ \end{array} } \right] & = & 
+\left[ {\begin{array}{cc}
+ \sum{W^2 I_x^2} & \sum{W^2 I_x I_y}  \\
+ \sum{W^2 I_y I_x} & \sum{W^2 I_y}  \\
+ \end{array} } \right]^{-1} & \cdot &
+\left[ {\begin{array}{c}
+ -\sum{W I_x I_t}  \\
+ -\sum{W I_y I_t} \\
+ \end{array} } \right]
+\end{array}
+   \end{eqnarray}
+
+   Il faut que $\mathbf{A^{T} W^2 A}$ soit inversible (i.e. aucune valeurs propres nulles). Cette matrice est défini comme étant le tenseur spatial du voxel $n$ \medskip
+
+	\bigskip
+	
+   Cas problématiques où le problème d'ouverture est toujours présent:
+
+   \begin{enumerate}
+      \item $I_x$ et/ou $I_y$ sont nulles $\rightarrow$ Surface homogène
+      \item Les gradients non-nuls sont parallèles $\rightarrow$ Bord 
+   \end{enumerate}\medskip
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{Lucas et Kanade}  
+   \framesubtitle{Valeurs propres}
+
+   
+   Une décomposition de $\mathbf{A^{T} W^2 A}$ en valeurs propres ($\lambda_{1} \geq \lambda_{2} \geq 0$) et leurs vecteurs propres unitaires ($\vec{e_1}$ et $\vec{e_2}$) nous permettent d'évaluer le résultat obtenu:\medskip
+
+   \begin{enumerate}
+      \item \textbf{Si $\lambda_{1}$ et $\lambda_{2} \leq seuil$}
+      \begin{itemize}
+       \item Zone homogène;
+       \item Résultat inacceptable, on considère que $\vec{V} = 0$.
+      \end{itemize}
+      \medskip
+
+      \item \textbf{Si $\lambda_{1}$ et $\lambda_{2} > seuil$}
+      \begin{itemize}
+       \item Zone texturée;
+       \item Résultat acceptable!
+      \end{itemize}
+      \medskip
+
+      \item \textbf{Si $\lambda_{2} > seuil$, mais $\lambda_{1} \leq seuil$}
+      \begin{itemize}
+       \item Contour (bord), où les gradients avoisinants vont tous dans la même direction;
+       \item On peut projeter $\vec{V}$ sur $\vec{e_2}$ pour garder une direction moyennée.
+      \end{itemize}
+      \medskip
+
+   \end{enumerate}\medskip
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{Lucas et Kanade}  
+   \framesubtitle{Valeurs propres}
+   
+   \fullscreenImg{eigen}
+
+\end{frame}
+
+
+\begin{frame}
+   \frametitle{Lucas et Kanade}  
+   \framesubtitle{Algorithme de Lucas-Kanade}
+
+\begin{tiny}
+   \begin{algorithm}[H]
+         \Entree{\fbox{$n$, $T$, $I(t)$, $I(t+1)$}: Grandeur de la fenête $n$, seuil $T$ et images aux temps $t$ et $t+1$}
+         \Sortie{\fbox{$M_v$}: Matrice des vecteurs de vitesse}
+         \medskip
+
+         $I_x \leftarrow$ Dérivée en $x$ de $I(t)$\;
+         $I_y \leftarrow$ Dérivée en $y$ de $I(t)$\;
+         $I_t \leftarrow$ Dérivée en $t$ utilisant $I(t)$ et $I(t+1)$\;
+         $G \leftarrow$ Noyau gaussien de grandeur $n$ \; 
+         \medskip
+
+         \Pour{Tous les pixel $(x,y)$ de $I_t$}
+         {
+            $A \leftarrow$ Matrice $n$x$2$ des pixels $(n)$ de $I_x(n)$ et $I_y(n)$ faisant parti de la fenêtre $W$ de taille $n$ entourant $(x,y)$ \;
+
+            $b \leftarrow$ Matrice $n$x$1$ des $I(n,t)$ de $W$ \;
+
+            $e_{1,2}, \lambda_{1,2} \leftarrow$ Décomposition en vecteurs et valeurs propres de $A^T G^2 A$ (triées) \;
+
+            \Si{$\lambda_{1}$ et $\lambda_{2} \leq T$}
+            {
+               $M_v(x,y) \leftarrow (A^T G^2 A)^-1 A^T b$ \;
+            }
+            \SinonSi{$\lambda_{1} \leq T$ et $\lambda_{2} > T$}
+            {
+               $M_v(x,y) \leftarrow (((A^T G^2 A)^-1 A^T b) \cdot e_2) e_2$ \;
+            }
+            \Sinon
+            {
+               $M_v(x,y) \leftarrow 0$ \;
+            }             
+         }
+   \end{algorithm}
+\end{tiny}
+      
+\end{frame}
+
+
+\subsection{Variante de Lucas et Kanade - Raffinement itératif}
+
+\begin{frame}
+	\frametitle{Variante de Lucas et Kanade}
+	\framesubtitle{Raffinement itératif de L-K}
+	
+	La méthode de Lukas et Kanade suppose: \medskip 
+   
+   \begin{enumerate}
+      \item Petits mouvements;
+      \item Illumination constante dans le temps;
+      \item \textbf{Mouvements constants dans un voisinage près (si on n'utilise pas de pondération).}
+   \end{enumerate} \medskip 
+
+   On peut améliorer la technique en ajoutant un terme \textit{a priori} du bruit de l'image. On utilise maintenant une version itératif basé sur la multi-résolution (Chapitre 2.2).
+	
+
+\end{frame}
+
+%\begin{frame}
+%   \frametitle{Variante de Lucas et Kanade}
+%   \framesubtitle{Algorithme du raffinement itératif de L-K}
+%
+%\begin{small}
+%   \begin{algorithm}[H]
+%         \Entree{\fbox{$n$, $T$, $I(t)$, $I(t+1)$}: Grandeur de la fenêtre $n$, seuil $T$ et images aux temps $t$ et $t+1$}
+%         \Sortie{\fbox{$M_v$}: Matrice des vecteurs de vitesse}
+%         \medskip
+%
+%         $M_v(apr), M_v(avant) \leftarrow 0$ \;
+%         $I(w) \leftarrow I(t)$ \;
+%
+%         \Repeter{$M_v(avant) == M_v(apr)$}
+%         {
+%            $M_v(avant) \leftarrow M_v(avant) + M_v(apr)$ \;
+%            $M_v(apr) \leftarrow L-K(n, T, I(w), I(t+1))$: On trouve le flux optique en utilisant L-K \;
+%            $I(w) \leftarrow$ Warping de $I(t)$ utilisant $M_v(apr)$ \;            
+%         }
+%         $M_v \leftarrow M_v(apr)$ \;
+%   \end{algorithm}
+%\end{small}
+%      
+%\end{frame}
+%
+
+
+
+\subsection{Horn et Schunck}
+
+\begin{frame}
+	\frametitle{Horn et Schunck}
+   \framesubtitle{Approche par intensité avec terme de régularisation}
+	
+	La méthode de \textbf{Horn et Schunck 1981} propose de régler le problème d'ouverture par une contrainte de lissage. Nous émettons donc les hypothèses suivantes:
+	
+	\begin{itemize}
+		\item Petits déplacements;
+		\item Illumination constante;
+		\item Les déplacements dans un même voisinage sont similaires (contrainte de lissage).
+	\end{itemize}\bigskip
+	
+	Contrairement à L-K, H-S est une résolution \textbf{globale} du problème du flux optique, car la contraite de lissage s'applique à toute l'image. Mais nous la simplifions avec une approche locale.
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{Horn et Schunck}
+   \framesubtitle{Approche par intensité avec terme de régularisation}
+	
+	Introduction d'un \textbf{terme de régularité de lissage global des vecteurs de vélocité}, contrôlé par $\lambda$. \medskip
+	
+	La problématique s'exprime par une fonction d'énergie globale à minimiser: 
+
+\begin{scriptsize} 
+   \begin{eqnarray}\label{HS1}
+\begin{array}{cccccc}
+E^2(\vec{V}) & = \displaystyle \int_{\vec{V}} & \left(  \vec{\nabla}I(x,y) \cdot  \vec{V} + I_t \right)^{2} & + & \lambda^2 
+\left[ 
+\left( \dfrac{\delta v_x}{\delta x} \right) + 
+\left( \dfrac{\delta v_x}{\delta y} \right) +   
+\left( \dfrac{\delta v_y}{\delta x} \right) +   
+\left( \dfrac{\delta v_y}{\delta y} \right) 
+\right] & d_x d_y \\
+         & = \displaystyle \int_{\vec{V}} & \left(  \vec{\nabla}I(x,y) \cdot  \vec{V} + I_t \right)^{2} & + & \lambda^2 
+\left[ 
+|\vec{\nabla} V_x|^2  + 
+|\vec{\nabla} V_y|^2  +   
+\right] & d_x d_y\\
+         & = \displaystyle \int_{\vec{V}} & \textit{Cst. illumination} & + & \textit{Terme de lissage} & d_x d_y\\
+\end{array}
+   \end{eqnarray}
+ \end{scriptsize}
+
+\end{frame}
+
+
+\begin{frame}
+   \frametitle{Horn et Schunck}
+   \framesubtitle{Approche par intensité avec terme de régularisation}
+	
+	À l'aide des équations d'\textit{Euler-lagrange}, on arrive à l'expression suivante:
+	
+	\begin{eqnarray*}
+	\frac{\partial E }{\partial x} = I_x\left( I_x*v_x + I_y*v_y  + I_t \right) ^2 - \lambda ^2 \Delta v_x = 0 \\
+	\frac{\partial E }{\partial y} = I_y\left( I_x*v_x + I_y*v_y  + I_t \right) ^2 - \lambda ^2 \Delta v_y = 0
+	\end{eqnarray*}
+	
+  	Où $\Delta$ représente l'opérateur de Lagrange.
+	
+	\begin{eqnarray*}
+	\Delta = \frac{\partial²}{\partial x²} + \frac{\partial²}{\partial y²}
+	\end{eqnarray*}
+\end{frame}
+
+\begin{frame}
+   \frametitle{Horn et Schunck}
+   \framesubtitle{Approche par intensité avec terme de régularisation}
+	
+	On peut approximer numériquement l'opérateur de Lagrange en supposant les déplacements des vecteurs voisins similaires au vecteur courant.
+	
+	\begin{eqnarray*}
+	\Delta v_x = \bar{v_x} - v_x \\
+	\Delta v_y = \bar{v_y} - v_y \\
+	\end{eqnarray*}	
+	
+	Où 	$\bar{v_n}$ est la moyenne pondérée du mouvement $v_n$ autour du vecteur $v_n$. 
+		
+\end{frame}
+
+\begin{frame}
+   \frametitle{Horn et Schunck}
+   \framesubtitle{Approche par intensité avec terme de régularisation}
+	
+	Les équations deviennent donc:
+	
+	\begin{eqnarray*}
+	I_x\left( I_x*v_x + I_y*v_y  + I_t \right) ^2 \! & + & \lambda ^2 \left( \bar{v_x} + v_x \right) = 0 \\
+	I_y\left( I_x*v_x + I_y*v_y  + I_t \right) ^2 \! & + & \lambda ^2 \left( \bar{v_y} + v_y \right) = 0 \\
+	\end{eqnarray*}
+	
+	On retrouve alors deux équations, deux inconnus ($v_x$, $v_y$). 
+		\medskip
+		
+	Quel est le rôle de $lambda$?
+	
+\end{frame}
+
+
+\begin{frame}
+   \frametitle{Horn et Schunck}
+   \framesubtitle{Approche par intensité avec terme de régularisation}
+	
+	Une méthode itérative comme Gauss-Seidel nous permet d'obtenir une solution:
+	
+   \begin{eqnarray} \label{HS2}
+\begin{array}{cccccc}
+v_x^{(k+1)} & = & \bar{v}_x^{(k)}  - \frac{I_x \left(I_x
+\bar{v}_x^{(k)}  + I_y \bar{v}_y^{(k)}  +
+I_t \right)}{\lambda^2 + (I_x)^2 + (I_y)^2}\vspace*{5mm} \\ 
+
+v_y^{(k+1)} & = & \bar{v}_y^{(k)}  - \frac{I_y \left(I_x
+\bar{v}_x^{(k)}   + I_y \bar{v}_y^{(k)}  +
+I_t \right)}{\lambda^2 + (I_x)^2 + (I_y)^2} \\
+\end{array}
+   \end{eqnarray}
+	
+	
+\end{frame}
+%
+%\begin{frame}
+%   \frametitle{Horn et Schunck}
+%   \framesubtitle{Calcul des vitesses moyennes}
+%	
+%	\underline{Comment calcule-t-on les $\bar{v_x}$ et $\bar{v_y}$?} \bigskip
+%	
+%	Horn et Schunck utlisent un voisinage d'un pixel, calculé avec la pondération suivante :
+%
+%	 
+%	 \img{0.8}{MasqueVoisin}
+%	 
+%
+%	
+%\end{frame}
+%
+%\begin{frame}
+%   \frametitle{Horn et Schunck}
+%   \framesubtitle{Approximation des dérivées}
+%	
+%	\underline{Comment approxime-t-on les dérivées $I_x$ et $I_y$?}\bigskip
+%	
+%	Horn et Schunck les approximent à l'aide une dérivée numérique vers la droite d'un pixel :
+%	
+%	\img{0.45}{Derive}
+%	 
+%	 	
+%\end{frame}
+%
+%
+%\begin{frame}
+%   \frametitle{Horn et Schunck}
+%   \framesubtitle{Approximation des dérivées}
+%
+%   \underline{Comment approxime-t-on les dérivées $I_x$ et $I_y$?}\medskip
+%
+%\begin{scriptsize} 
+%\begin{eqnarray*}
+%\begin{array}{cccccc}
+%    I_x & =\frac{1}{4} ( & I(i+1,j,k) - I(i,j,k)   &+& I(i+1,j+1,k) - I(i,j+1,k)   & +   \\
+%        &                & I(i+1,j,k+1)-I(i,j,k+1) &+& I(i+1,j+1,k+1)-I(i,j+1,k+1) & ) \vspace*{6mm}\\
+%
+%    I_y & =\frac{1}{4} ( & I(i,j+1,k) - I(i,j,k)   &+& I(i+1,j+1,k) - I(i+1,j,k)   & +   \\
+%        &                & I(i,j+1,k+1)-I(i,j,k+1) &+& I(i+1,j+1,k+1)-I(i+1,j,k+1) & ) \vspace*{6mm}\\
+%
+%    I_t & =\frac{1}{4} ( & I(i+1,j,k+1)-I(i+1,j,k) &+& I(i+1,j+1,k+1)-I(i+1,j+1,k) & +   \\
+%        &                & I(i,j,k+1) - I(i,j,k)   &+& I(i,j+1,k+1) - I(i,j+1,k)   & ) \vspace*{6mm}\\
+%\end{array}
+%\end{eqnarray*}
+%\end{scriptsize}
+%
+%\end{frame}
+
+
+\begin{frame}
+   \frametitle{Horn et Schunck}
+   \framesubtitle{Terme de régularisation}
+
+   \underline{Comment détermine-t-on $\lambda$?}\bigskip
+
+   $\lambda$ contrôle l'emphase accordée au voisinage. Un $\lambda$ élevé: 
+
+   \begin{itemize}
+    \item Augmente l'ouverture, permettant une meilleure résolution de la \textbf{direction} du flux optique;\medskip
+    \item Entraîne une perte de précision sur l'\textbf{ampitude} du vecteur de déplacement. \medskip
+   \end{itemize}
+        
+\end{frame}
+
+
+\begin{frame}
+   \frametitle{Horn et Schunck}
+   \framesubtitle{Algorithme de la méthode Horn et Schunck}
+
+\begin{footnotesize}
+   \begin{algorithm}[H]
+         \Entree{\fbox{$nbIter, \lambda^2, I(t), I(t+1)$}: Nb d'itérations $nbIter$, facteur de lissage $\lambda^2$ et images aux temps $t$ et $t+1$}
+         \Sortie{\fbox{$M_v$}: Matrice des vecteurs de vitesse}
+         \medskip
+
+         $I_x \leftarrow$ Dérivée en $x$ de $I(t)$\;
+         $I_y \leftarrow$ Dérivée en $y$ de $I(t)$\;
+         $I_t \leftarrow$ Dérivée en $t$ utilisant $I(t)$ et $I(t+1)$\;
+
+         $V_x, V_y, \bar{V_x}, \bar{V_y} \leftarrow$ Images à $0$ \; 
+         $k \leftarrow$ $0$ \; 
+         \medskip
+
+         \Repeter{$k < nbIter$}
+         {
+            $\bar{V_x}, \bar{V_y} \leftarrow$ Calcul des vitesses moyennées en utilisant $V_x$ et $V_y$ pour tous les pixels $(x,y)$ \;
+            $V_x, V_y \leftarrow$ Calcul des vitesses $V_x^{k+1}$ et $V_y^{k+1}$ pour tous les pixels $(x,y)$ (Eq.$\ref{HS2}$)  \;           
+         }
+         $M_v \leftarrow V_x, V_y$ \;
+   \end{algorithm}
+\end{footnotesize}
+      
+\end{frame}
+
+
+\subsection{Variante de Horn et Schunck - Raffinement du lissage}
+
+\begin{frame}
+   \frametitle{Variante de Horn et Schunck}
+   \framesubtitle{Ajout d'un prélissage globale}
+
+   Pour \textbf{améliorer l'approximation des dérivées partielles} et \textbf{diminuer la sensibilité au bruit}, on peut appliquer un filtre gaussien aux images avant de calculer leurs dérivées partielles:
+
+   \begin{footnotesize} 
+   \begin{eqnarray}\label{HS3}
+E(\vec{V}) = \displaystyle \int_{\vec{V}} \mathbf{G} \cdot \left(  \vec{\nabla}I(x,y) \cdot  \vec{V} + I_t \right)^{2} + \lambda^2 
+\left[ 
+|\vec{\nabla} V_x|^2  + 
+|\vec{\nabla} V_y|^2  +   
+\right] & d_x d_y
+   \end{eqnarray}
+   \end{footnotesize}
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{Variante de Horn et Schunck}
+   \framesubtitle{Raffinement de la fonction de lissage}
+   
+   Au lieu d'une constante de lissage $\lambda^2$, on utilise une \textbf{fonction de pondération} basée sur le gradient. \medskip
+
+   Si le gradient est élevé (bord), on réduit l'apport du voisinage en attibuant une faible pondération afin de \textbf{réduire l'effet de discontinuité de la vitesse} et ainsi \textbf{gagner de la précision} en \textbf{réduisant la contrainte de voisinage}. \bigskip
+
+   \begin{footnotesize} 
+   \begin{eqnarray}\label{HS4}
+E(\vec{V}) = \displaystyle \int_{\vec{V}} \left(  \vec{\nabla}I(x,y) \cdot  \vec{V} + I_t \right)^{2} + \mathbf{W(|\vec{\nabla}I(x,y)|)} 
+\left[ 
+|\vec{\nabla} V_x|^2  + 
+|\vec{\nabla} V_y|^2  +   
+\right] & d_x d_y
+   \end{eqnarray}
+   \end{footnotesize}
+
+\end{frame}
+\begin{frame}[shrink]
+	\frametitle{Approche d'intensité}
+	\framesubtitle{Résumé des méthodes de base}
+
+\begin{scriptsize}	
+	\begin{columns}[t]
+	
+	\column{.5\textwidth}
+	\textbf{\underline{Horn-Schunck}}:\\
+	
+	\begin{itemize}
+		\item Petits mouvements;
+		\item Illumination constante;
+		\item Déplacements similaires dans un voisinage immédiat;
+		\item Itératif, basé sur un terme de régularisation.
+	\end{itemize}
+
+	\column{.5\textwidth}
+	\textbf{\underline{Lucas-Kanade}}:\\
+	
+	\begin{itemize}
+		\item Petits mouvements;
+		\item Illumination constante;
+		\item Déplacements similaires dans un voisinage immédiat;
+		\item Déterministe, basé sur les équations à régression linéaire.
+	\end{itemize}
+
+	\end{columns}
+
+\begin{columns}[t]
+   
+   \column{.5\textwidth}
+   
+   \textbf{\underline{Variante: Raffinement du lissage}}\\
+
+   \begin{itemize}
+    \item Lissage avant le calcul des dérivées partielles:\\
+      $\rightarrow$ Dérivées partielles plus "fidèles";\\
+      $\rightarrow$ Moins sensible au bruit.\\
+    \item Fonction du lissage:\\
+      $\rightarrow$ Fonction pondérée selon la norme du gradient;\\
+      $\rightarrow$ Moins sensible à la contrainte de voisinage.\\ 
+   \end{itemize}
+
+   \column{.5\textwidth}
+
+   \textbf{\underline{Variante: Raffinement itératif}}\\
+   
+   \begin{itemize}
+    \item Évolution à un processus itératif:\\
+      $\rightarrow$ Moins sensible à la contrainte de voisinage;\\
+      $\rightarrow$ Moins sensible au bruit.\\
+   \end{itemize}
+
+   \end{columns}
+
+\end{scriptsize}
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Approche d'intensité}
+	\framesubtitle{Variantes}
+	
+	Il existe plusieurs variantes de Horn-Schunk et Lucas-Kanade, combinant aussi des méthodes du chapitre suivant.
+	
+	Comme par exemple, dans Opencv:
+	
+	\begin{itemize}
+		\item Brox (2004): \url{http://lmb.informatik.uni-freiburg.de/Publications/2004/Bro04a/brox_eccv04_of.pdf}
+		\item Farneback (2002): \url{http://www.diva-portal.org/smash/get/diva2:273847/FULLTEXT01.pdf}
+	
+	\end{itemize}
+\end{frame}
+
+
+\end{document}
+
+
